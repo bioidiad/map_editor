@@ -7,12 +7,14 @@ void	key_press(t_all *all)
 	keystate = SDL_GetKeyboardState(NULL);
 	if (keystate[SDL_SCANCODE_ESCAPE])
 	{
-		// sdl_quit(sdl);
-		exit(0);
+		SDL_DestroyTexture(all->texture);
+    	SDL_DestroyRenderer(all->sdl->renderer);
+    	SDL_DestroyWindow(all->sdl->window);
+	    SDL_Quit();
+		// exit(0);
 	}
 	else if (keystate[SDL_SCANCODE_TAB])
 		all->layer = all->layer == 0 ? 1 : 0;
-	// draw_all(all);
 }
 
 void	button_click(t_button *buttons, SDL_MouseButtonEvent *event)
@@ -30,14 +32,14 @@ void	button_click(t_button *buttons, SDL_MouseButtonEvent *event)
 		if(dx > 0 && dy > 0 && dx < PICT_WIDTH && dy < PICT_HEIGHT)
 		{
 			buttons[i].state = buttons[i].state == 0 ? 1 : 0;
-			buttons->swap = buttons[i].object.surface;
+			buttons->swap = buttons[i].object.texture;
 		}
 		i++;
 	}
 }
 
 void	map_click(t_object obj[MAP_WIDTH][MAP_HEIGHT], SDL_MouseButtonEvent *event,
-				SDL_Surface *swap)
+				SDL_Texture *swap)
 {
 	int	i;
 	int j;
@@ -53,7 +55,7 @@ void	map_click(t_object obj[MAP_WIDTH][MAP_HEIGHT], SDL_MouseButtonEvent *event,
 			dx = event->x - obj[i][j].dstrect.x;
 			dy = event->y - obj[i][j].dstrect.y;
 			if(dx > 0 && dy > 0 && dx < OBJ_SIDE && dy < OBJ_SIDE)
-				obj[i][j].surface = swap; 
+				obj[i][j].texture = swap; 
 			j++;
 		}
 		i++;

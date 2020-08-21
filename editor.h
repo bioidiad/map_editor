@@ -24,13 +24,12 @@
 typedef struct	    s_sdl
 {
 	SDL_Window	    *window;
-	SDL_Texture		*texture;
 	SDL_Renderer	*renderer;
 }				    t_sdl;
 
 typedef struct      s_object
 {
-    SDL_Surface     *surface;
+    SDL_Texture     *texture;
     SDL_Rect        dstrect;
 }                   t_object;
 
@@ -38,7 +37,7 @@ typedef struct      s_button
 {
     t_object        object;
     int             state;
-    SDL_Surface     *swap;
+    SDL_Texture     *swap;
 }                   t_button;
 
 typedef struct      s_all
@@ -46,8 +45,7 @@ typedef struct      s_all
     int             layer;
     char            *map;
     SDL_Rect        area;
-    SDL_Texture     *texture;/////
-    t_object        *background;
+    SDL_Texture     *texture;
     t_object        object[LAYER][MAP_WIDTH][MAP_HEIGHT];
     t_button        buttons[BUTTONS];
     
@@ -59,6 +57,6 @@ void                error_and_close(const char *file, const char *function); // 
 void                on_event(t_all *all, SDL_Event *event); //обработка событий
 
 int                 load_texture(char *file, t_all *all);// звгрузка текстур
-void                draw_all(t_all *all);//отрисовка
+void                draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn);//отрисовка
 
 # endif

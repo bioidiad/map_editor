@@ -15,7 +15,7 @@ void	interact(t_all *all)
 			if (cur_time - last_time > FPS)
 				break ;
 		}
-		draw_all(all);
+		draw_all(all, all->sdl->renderer, all->buttons);
 	}
 }
 

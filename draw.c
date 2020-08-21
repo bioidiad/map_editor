@@ -1,6 +1,6 @@
 #include "editor.h"
 
-void	draw_map(t_object obj[MAP_HEIGHT][MAP_WIDTH], SDL_Surface *screen)
+void	draw_map(t_object obj[MAP_HEIGHT][MAP_WIDTH], SDL_Renderer *rnd)
 {
 	int	i;
 	int j;
@@ -13,42 +13,33 @@ void	draw_map(t_object obj[MAP_HEIGHT][MAP_WIDTH], SDL_Surface *screen)
 		j = 0;
 		while(j < MAP_WIDTH)
 		{
-			if(obj[i][j].surface != NULL)
-				SDL_BlitScaled(obj[i][j].surface, NULL, 
-        	screen, &obj[i][j].dstrect); 
+			if(obj[i][j].texture != NULL)
+				SDL_RenderCopy(rnd, obj[i][j].texture, NULL, &obj[i][j].dstrect);
 			j++;
 		}
 		i++;
 	}
 }
 
-void	draw_all(t_all *all)
+void	draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn)
 {
-	SDL_Surface *screen;
     int			i;
 
 	i = 0;
-
-    // if (!(screen = SDL_GetWindowSurface(all->sdl->window)))
-    //     error_and_close(__FILE__, __FUNCTION__);
-	// SDL_BlitSurface(all->background->surface, NULL, screen, NULL);
-	// while (i++ <= BUTTONS)
-	// {
-	// 	if(all->buttons[i - 1].state == 1)
-	// 		SDL_FillRect(screen, &all->buttons[i - 1].object.dstrect, 0xFFFFFF);
-	// 	SDL_BlitScaled(all->buttons[i - 1].object.surface, NULL, 
-    //     	screen, &all->buttons[i - 1].object.dstrect); // blit it to the screen
-    // }
-    // if(all->layer == 1)
-    // {
-    //     draw_map(all->object[0], screen);
-    //     SDL_FillRect(screen, &all->area, SDL_MapRGBA(screen->format, 255, 255, 255, 25));
-    // }
-	// draw_map(all->object[all->layer], screen);
-	// SDL_UpdateWindowSurface(all->sdl->window);
-	///SDL_FreeSurface(screen);//      текстура будет удалена вместе с окном SDL
-
-    SDL_RenderClear(all->sdl->renderer);
-    SDL_RenderCopy(all->sdl->renderer, all->texture, NULL, NULL);
+    SDL_RenderCopy(rnd, all->texture, NULL, NULL);
+	while (i++ <= BUTTONS)
+	{
+        SDL_SetRenderDrawColor(rnd, 250, 250, 250, 70);
+		if(all->buttons[i - 1].state == 1)
+            SDL_RenderFillRect(rnd, &btn[i - 1].object.dstrect);
+        SDL_RenderCopy(rnd, btn[i - 1].object.texture, NULL, &btn[i - 1].object.dstrect);
+    } 
+    if(all->layer == 1)
+    {
+        draw_map(all->object[0], rnd);
+        SDL_SetRenderDrawColor(rnd, 250, 250, 250, 200);
+        SDL_RenderFillRect(rnd, &all->area);
+    }
+	draw_map(all->object[all->layer], rnd);
     SDL_RenderPresent(all->sdl->renderer);
 }

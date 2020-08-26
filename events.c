@@ -31,41 +31,57 @@ void	button_click(t_button *buttons, SDL_MouseButtonEvent *event)
 		dy = event->y - buttons[i].object.dstrect.y;
 		if(dx > 0 && dy > 0 && dx < PICT_WIDTH && dy < PICT_HEIGHT)
 		{
-			buttons[i].state = buttons[i].state == 0 ? 1 : 0;
+			buttons[i].state = 1;
 			buttons->swap = buttons[i].object.texture;
 		}
 		i++;
 	}
 }
 
-void	map_click(t_object obj[MAP_WIDTH][MAP_HEIGHT], SDL_MouseButtonEvent *event,
-				SDL_Texture *swap)
-{
-	int	i;
-	int j;
-	int	dx;
-	int	dy;
+// void	map_click(t_object obj[MAP_WIDTH][MAP_HEIGHT], SDL_MouseButtonEvent *event,
+// 				SDL_Texture *swap)
+// {
+// 	int	i;
+// 	int j;
+// 	int	dx;
+// 	int	dy;
 
-	i = 0;
-	while(i < MAP_HEIGHT)
-	{
-		j = 0;
-		while(j < MAP_WIDTH)
-		{
-			dx = event->x - obj[i][j].dstrect.x;
-			dy = event->y - obj[i][j].dstrect.y;
-			if(dx > 0 && dy > 0 && dx < OBJ_SIDE && dy < OBJ_SIDE)
-				obj[i][j].texture = swap; 
-			j++;
-		}
-		i++;
-	}
+// 	i = 0;
+// 	while(i < MAP_HEIGHT)
+// 	{
+// 		j = 0;
+// 		while(j < MAP_WIDTH)
+// 		{
+// 			dx = event->x - obj[i][j].dstrect.x;
+// 			dy = event->y - obj[i][j].dstrect.y;
+// 			if(dx > 0 && dy > 0 && dx < OBJ_SIDE && dy < OBJ_SIDE)
+// 				obj[i][j].texture = event->button == SDL_BUTTON_LEFT ? swap : NULL; 
+// 			j++;
+// 		}
+// 		i++;
+// 	}
+// }
+
+void	map_click(SDL_MouseButtonEvent *event,
+				t_line *line)
+{
+	line->x2 = event->x;
+	line->y2 = event->y;
+
 }
 
 void	on_click(t_all *all, SDL_MouseButtonEvent *event)
 {
 	if (event->x >= 230)
-		map_click(all->object[all->layer], event, all->buttons->swap);
+	{
+		if (all->line.state == 0)
+		{
+			all->line.x1 = event->x;
+			all->line.y1 = event->y;
+			all->line.state = 1;
+		}
+		map_click(event, &all->line);
+	}
 	else
 		button_click(all->buttons, event);
 

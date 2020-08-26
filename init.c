@@ -71,6 +71,7 @@ t_all    *init_all()
     all->map = (char*)malloc(sizeof(char) * (MAP_WIDTH * MAP_HEIGHT * MAP_ELEMENTS) + 1);
     init_sdl(all->sdl);
 	all->layer = 0;
+	all->line.state = 0;
 	all->area = map_area();
 	init_objects(all);
 	return(all);

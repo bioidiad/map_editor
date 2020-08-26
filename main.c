@@ -23,13 +23,7 @@ int main()
 {
     t_all           *all;
     
-    // all->map = открыть/создать и считать карту.
-    // else:
-
     all = init_all();
 	if (load_texture("filename", all) == 0)
 		interact(all);
-
-	
-    //free(all->data);
 }

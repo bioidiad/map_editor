@@ -24,6 +24,7 @@ void	draw_map(t_object obj[MAP_HEIGHT][MAP_WIDTH], SDL_Renderer *rnd)
 void	draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn)
 {
     int			i;
+	Uint32 state;
 
 	i = 0;
     SDL_RenderCopy(rnd, all->texture, NULL, NULL);
@@ -36,10 +37,13 @@ void	draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn)
     } 
     if(all->layer == 1)
     {
-        draw_map(all->object[0], rnd);
+        draw_map(all->object[all->layer - 1], rnd);
         SDL_SetRenderDrawColor(rnd, 250, 250, 250, 200);
         SDL_RenderFillRect(rnd, &all->area);
     }
+	state = SDL_GetMouseState(&all->line.x2, &all->line.y2);
+	SDL_RenderDrawLine(all->sdl->renderer, all->line.x1, all->line.y1, all->line.x2, all->line.y2);
+	printf("1=%d\n2=%d\n3=%d\n4=%d\n", all->line.x1, all->line.y1, all->line.x2, all->line.y2);
 	draw_map(all->object[all->layer], rnd);
     SDL_RenderPresent(all->sdl->renderer);
 }

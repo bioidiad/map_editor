@@ -40,10 +40,20 @@ typedef struct      s_button
     SDL_Texture     *swap;
 }                   t_button;
 
+typedef struct      s_line
+{
+    int             state;
+    int             x1;
+    int             y1;
+    int             x2;
+    int             y2;
+}                   t_line;
+
 typedef struct      s_all
 {
     int             layer;
     char            *map;
+    t_line          line;
     SDL_Rect        area;
     SDL_Texture     *texture;
     t_object        object[LAYER][MAP_WIDTH][MAP_HEIGHT];

@@ -13,9 +13,17 @@
 #ifndef LIBFT_H
 # define LIBFT_H
 
+# define BUFF_SIZE 1000
+# define EOFL 1
+# define EOFF 0
+# define ERR -1
+
+# include <unistd.h>
+# include <fcntl.h>
 # include <string.h>
 # include <stdlib.h>
 # include <math.h>
+
 
 typedef struct		s_list
 {
@@ -97,5 +105,6 @@ int					ft_sort_params(int argc, char const *argv[]);
 void				ft_expand_str(int a, char *str);
 void				ft_cut(char *str);
 int					ft_skip(int j, char *str);
+int					get_next_line(const int fd, char **line);
 
 #endif

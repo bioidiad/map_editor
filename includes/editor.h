@@ -11,15 +11,15 @@
 # define MAP_WIDTH 11
 # define MAP_HEIGHT 11
 # define MAP_ELEMENTS 4
-# define WIDTH 864
-# define HEIGHT 632
-# define FPS 24
+# define WIDTH 1200
+# define HEIGHT 700
+# define FPS 200
 # define PICT_HEIGHT 50
 # define PICT_WIDTH 50
 // # define OBJECTS (MAP_HEIGHT * MAP_WIDTH)
 # define BUTTONS 10
 # define OBJ_SIDE 57
-# define LAYER 2
+// # define LAYER 2
 # define EYE_HEIGHT 6
 
 typedef struct	    s_sdl
@@ -41,9 +41,21 @@ typedef struct	s_xyz
 	float		z;
 }				t_xyz;
 
+typedef struct      s_sect
+{
+	int			select;
+	float		floor;
+	float		ceil;
+	t_xy		*vertex;		//	Координаты всех вершин данного сектора, причем первая координаты дублируется в конце
+	signed char *neighbors;		//	Номера всех соседей данного сектора
+	unsigned	npoints; //	Количество соседей
+			
+}                   t_sect;
+
 typedef struct      s_object
 {
-    SDL_Texture     *texture;
+    t_sect			*sector;
+	SDL_Texture		*texture;
     SDL_Rect        dstrect;
 }                   t_object;
 
@@ -54,14 +66,14 @@ typedef struct      s_button
     SDL_Texture     *swap;
 }                   t_button;
 
-typedef struct      s_line
-{
-    int             state;
-    int             x1;
-    int             y1;
-    int             x2;
-    int             y2;
-}                   t_line;
+// typedef struct      s_line
+// {
+//     int             state;
+//     int             x1;
+//     int             y1;
+//     int             x2;
+//     int             y2;
+// }                   t_line;
 
 typedef	struct	s_player
 {
@@ -85,25 +97,20 @@ typedef	struct	s_player
 	SDL_Event	event;
 }				t_player;
 
-typedef struct      s_sect
-{
-	float		floor;
-	float		ceil;
-	t_xy		*vertex;		//	Координаты всех вершин данного сектора, причем первая координаты дублируется в конце
-	signed char *neighbors;		//	Номера всех соседей данного сектора
-	unsigned	npoints;		//	Количество соседей
-}                   t_sect;
-
 typedef struct      s_all
 {
     t_player        player;
-    int             layer;
+    // int             layer;
     t_sect          *sectors;
     unsigned int    num_sectors;
-    t_line          line;
+	int 			step;
+	float			angle;
+	t_xyz			rot;
+    t_xyz			mouse;
+	t_xyz			mapsize;
     SDL_Rect        area;
     SDL_Texture     *texture;
-    t_object        object[LAYER][MAP_WIDTH][MAP_HEIGHT];
+    t_object        map[690][876];
     t_button        buttons[BUTTONS];
     
     t_sdl           *sdl;

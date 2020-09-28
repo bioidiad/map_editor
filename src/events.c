@@ -13,8 +13,16 @@ void	key_press(t_all *all)
 	    SDL_Quit();
 		// exit(0);
 	}
-	else if (keystate[SDL_SCANCODE_TAB])
-		all->layer = all->layer == 0 ? 1 : 0;
+	// else if (keystate[SDL_SCANCODE_TAB])
+	// 	all->layer = all->layer == 0 ? 1 : 0;
+	else if (keystate[SDL_SCANCODE_RIGHT])
+		all->rot.x += 1;
+	else if (keystate[SDL_SCANCODE_LEFT])
+		all->rot.x -= 1;
+	else if (keystate[SDL_SCANCODE_UP])
+		all->rot.y += 1;
+	else if (keystate[SDL_SCANCODE_DOWN])
+		all->rot.y -=1;
 }
 
 void	button_click(t_button *buttons, SDL_MouseButtonEvent *event)
@@ -38,59 +46,50 @@ void	button_click(t_button *buttons, SDL_MouseButtonEvent *event)
 	}
 }
 
-// void	map_click(t_object obj[MAP_WIDTH][MAP_HEIGHT], SDL_MouseButtonEvent *event,
-// 				SDL_Texture *swap)
-// {
-// 	int	i;
-// 	int j;
-// 	int	dx;
-// 	int	dy;
-
-// 	i = 0;
-// 	while(i < MAP_HEIGHT)
-// 	{
-// 		j = 0;
-// 		while(j < MAP_WIDTH)
-// 		{
-// 			dx = event->x - obj[i][j].dstrect.x;
-// 			dy = event->y - obj[i][j].dstrect.y;
-// 			if(dx > 0 && dy > 0 && dx < OBJ_SIDE && dy < OBJ_SIDE)
-// 				obj[i][j].texture = event->button == SDL_BUTTON_LEFT ? swap : NULL; 
-// 			j++;
-// 		}
-// 		i++;
-// 	}
-// }
-
-void	map_click(SDL_MouseButtonEvent *event,
-				t_line *line)
+void	map_click(t_xyz *mouse, t_object *map, t_all *all)
 {
-	line->x2 = event->x;
-	line->y2 = event->y;
+	int x;
+	int y;
+	int i;
 
+	x = (int)mouse->x;
+	y = (int)mouse->y;
+	i = 0;
+	if(map->sector)
+	{
+			
+			map->sector->select = map->sector->select == 0 ? 1 : 0;
+			printf("x = %d\ny = %d\nSector = %f:%f\nselected = %d\n", x, y,
+			map->sector->vertex->x, map->sector->vertex->y, map->sector->select);
+	}
+	
+	
 }
 
-void	on_click(t_all *all, SDL_MouseButtonEvent *event)
+void	on_mouse(t_all *all, SDL_MouseButtonEvent *event)
 {
-	if (event->x >= 230)
+	SDL_Rect	*temp;
+
+	temp = &all->area;
+	if (event->x >= temp->x && event->x <= (temp->x + temp->w) &&
+			event->y >= temp->y && event->y <= (temp->y + temp->h) &&
+				all->mouse.z == 1)
 	{
-		if (all->line.state == 0)
-		{
-			all->line.x1 = event->x;
-			all->line.y1 = event->y;
-			all->line.state = 1;
-		}
-		map_click(event, &all->line);
+		all->mouse = (t_xyz){event->x - temp->x, event->y - temp->y};//пишем координаты мыши на карте
+		map_click(&all->mouse, &(all->map[event->y - temp->y][event->x - temp->x]), all);
 	}
 	else
-		button_click(all->buttons, event);
+		button_click(all->buttons, event); // обработка кликов на панели управления
 
 }
 
 void	on_event(t_all *all, SDL_Event *event)
 {
 	if (event->key.type == SDL_KEYDOWN)
-		key_press(all);
+		key_press(all); // обработка событий клавиатуры
 	else if (event->button.type == SDL_MOUSEBUTTONDOWN)
-		on_click(all, &event->button);
+		all->mouse.z = 1;
+	else if (event->button.type == SDL_MOUSEBUTTONUP)
+		all->mouse.z = 0;
+	on_mouse(all, &event->button); // обаботка событий мыши
 }

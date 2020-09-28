@@ -22,44 +22,23 @@ static void			init_sdl(t_sdl *sdl)
 	SDL_SetRenderDrawBlendMode(sdl->renderer, SDL_BLENDMODE_BLEND);
 }
 
-void	init_objects(t_all *all)
+void	init_map(t_all *all)
 {
 	int	i;
 	int	j;
-	int k;
 
-	k = 0;
-	while (k < LAYER)
+	i = 0;
+	while(i < 690)
 	{
-		i = 0;
-		while(i < MAP_HEIGHT)
+		j = 0;
+		while(j < 876)
 		{
-			j = 0;
-			while(j < MAP_WIDTH)
-			{
-				all->object[k][i][j].dstrect.x = 230 + (OBJ_SIDE * j);
-				all->object[k][i][j].dstrect.y = 4 + (OBJ_SIDE * i);
-				all->object[k][i][j].dstrect.h = OBJ_SIDE;
-				all->object[k][i][j].dstrect.w = OBJ_SIDE;
-				all->object[k][i][j].texture = NULL;
-				j++;
-			}
-			i++;
+			all->map[i][j].texture = NULL;
+			//all->map[i][j].sector = NULL;
+			j++;
 		}
-		k++;
+		i++;
 	}
-}
-
-SDL_Rect	map_area()
-{
-	SDL_Rect area;
-
-	area.x = 230;
-	area.y = 4;
-	area.h = 622;
-	area.w = 628;
-
-	return (area);
 }
 
 t_all    *init_all()
@@ -70,9 +49,11 @@ t_all    *init_all()
 	all->sdl = (t_sdl*)malloc(sizeof(t_sdl));
     //all->map = (char*)malloc(sizeof(char) * (MAP_WIDTH * MAP_HEIGHT * MAP_ELEMENTS) + 1);
     init_sdl(all->sdl);
-	all->layer = 0;
-	all->line.state = 0;
-	all->area = map_area();
-	init_objects(all);
+	all->angle = 20;
+	all->rot = (t_xyz){45, 0, 0};
+	// all->layer = 0; // слои, возможно не понадобятся
+	all->mouse.z = 0; // переменная нажатия ЛКМ
+	all->area = (SDL_Rect){319, 4, 876, 690}; // Область карты
+	init_map(all);
 	return(all);
 }

@@ -1,7 +1,8 @@
 
 NAME = DOOM
 FLAGS = #-Wall -Werror -Wextra
-CFLAGS = -I SDL/SDL.h -L lib -l SDL2-2.0.0
+CFLAGS = -I SDL2/SDL.h -lSDL2
+#CFLAGS = -I SDL/SDL.h -L lib -l SDL-2.0.0
 
 SRCDIR	= ./src
 INCDIR	= ./includes

@@ -18,6 +18,7 @@ void	load_map(t_all *all)
 	struct s_xy *vert = NULL, v;
 	int n, m, NumVertices = 0;
 	line = (char*)malloc(sizeof(char) * BUFF_SIZE + 1);
+	all->mapsize = (t_xyz){0, 0, 0};
 	while (get_next_line(fd, &line))
 		switch (sscanf(line, "%32s%n", word, &n) == 1 ? word[0] : '\0')
 		{
@@ -26,6 +27,8 @@ void	load_map(t_all *all)
 			{
 				vert = realloc(vert, ++NumVertices * sizeof(*vert));
 				vert[NumVertices - 1] = v;
+				all->mapsize.x = v.x > all->mapsize.x ? v.x : all->mapsize.x;
+				all->mapsize.y = v.y > all->mapsize.y ? v.y : all->mapsize.y;
                 //NumVertices общее количество вершин
                 //vert массив всех вершин где к примеру строка vertex	0	0 6 28 хранится как 0 0, 0 6, 0 28
                 //никаких разделителей между строк нет
@@ -37,6 +40,7 @@ void	load_map(t_all *all)
 			int *num = NULL;
 			//считывает пол и потолок
 			sscanf(line += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
+			all->mapsize.z = sect->ceil > all->mapsize.z ? sect->ceil : all->mapsize.z;
 			for (m = 0; sscanf(line += n, "%32s%n", word, &n) == 1 && word[0] != '#';)
 			{
 				num = realloc(num, ++m * sizeof(*num));
@@ -49,6 +53,7 @@ void	load_map(t_all *all)
 			sect->npoints = m /= 2; //количество соседей и вершин этого сектора (всегда одинаково)
 			sect->neighbors = malloc((m) * sizeof(*sect->neighbors));
 			sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
+			sect->select = 0;
 			//цикл запишет правую половину num массива, то есть соседей
 			for (n = 0; n < m; ++n)
 				sect->neighbors[n] = num[m + n];
@@ -75,4 +80,5 @@ void	load_map(t_all *all)
 	close(fd);
 	free(vert);
 	printf("data loaded\n");
+	// printf("map width = %f\nmap lenght = %f\nmap height = %f\n", all->mapsize.x, all->mapsize.y, all->mapsize.z);
 }

@@ -43,7 +43,6 @@ typedef struct	s_xyz
 
 typedef struct      s_sect
 {
-	int			select;
 	float		floor;
 	float		ceil;
 	t_xy		*vertex;		//	Координаты всех вершин данного сектора, причем первая координаты дублируется в конце
@@ -100,7 +99,7 @@ typedef	struct	s_player
 typedef struct      s_all
 {
     t_player        player;
-    // int             layer;
+    t_sect          *swap;
     t_sect          *sectors;
     unsigned int    num_sectors;
 	int 			step;
@@ -111,6 +110,7 @@ typedef struct      s_all
     SDL_Rect        area;
     SDL_Texture     *texture;
     t_object        map[690][876];
+	t_xyz			map_whl;
     t_button        buttons[BUTTONS];
     
     t_sdl           *sdl;

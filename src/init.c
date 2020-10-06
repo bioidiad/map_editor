@@ -34,7 +34,7 @@ void	init_map(t_all *all)
 		while(j < 876)
 		{
 			all->map[i][j].texture = NULL;
-			//all->map[i][j].sector = NULL;
+			all->map[i][j].sector = NULL;
 			j++;
 		}
 		i++;
@@ -51,7 +51,7 @@ t_all    *init_all()
     init_sdl(all->sdl);
 	all->angle = 20;
 	all->rot = (t_xyz){45, 0, 0};
-	// all->layer = 0; // слои, возможно не понадобятся
+	all->map_whl = (t_xyz){0, 0, 0}; // слои, возможно не понадобятся
 	all->mouse.z = 0; // переменная нажатия ЛКМ
 	all->area = (SDL_Rect){319, 4, 876, 690}; // Область карты
 	init_map(all);

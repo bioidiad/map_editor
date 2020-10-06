@@ -49,7 +49,8 @@ void	line_sector(t_all *all, t_sect *sect, t_xyz *start, t_xyz *fin)
 			all->map[(int)y][(int)x].sector = sect;
 			all->map[(int)y + 1][(int)x + 1].sector = sect;
 			all->map[(int)y - 1][(int)x - 1].sector = sect;//записываем вершины по координатам пикселей
-		}//printf("sectx = %f:%f\n", sect->vertex->x, sect->vertex->y);
+		//printf("sectx = %f:%f\n", all->map[(int)y][(int)x].sector->vertex->x, sect->vertex->y);
+		}
 	} 	
 }
 
@@ -57,7 +58,7 @@ t_xyz	isometric(t_all *all, t_sect *sect, t_xyz *start, t_xyz rot)
 {
 	t_xyz temp;
 
-	rot = (t_xyz){(M_PI / 180 * rot.x), (M_PI / 180 * rot.y), (M_PI / 180 * rot.z) * -1};
+	rot = (t_xyz){(M_PI / 135 * rot.x), (M_PI / 135 * rot.y), (M_PI / 135 * rot.z) * -1};
 	temp.y = all->area.h/2 + start->y * cos(rot.x) + start->z * sin(rot.x);
 	temp.z = -(start->y * sin(rot.x)) + start->z * cos(rot.x);
 	start->y = temp.y;
@@ -71,15 +72,6 @@ t_xyz	isometric(t_all *all, t_sect *sect, t_xyz *start, t_xyz rot)
 	start->x = temp.x;
 	start->y = temp.y;
 }
-
-// void	rotate(t_all *all, t_xyz *point)
-// {
-// 	t_xyz res;
-
-
-// 	res = (t_xyz){(M_PI / 180 * point->x), (M_PI / 180 * point->y), (M_PI / 180 * point->z) * -1};
-// 	*point = res;
-// }
 
 void	draw_wall(t_all *all, t_sect *sect, int j, t_xyz *vertex)
 {
@@ -97,35 +89,29 @@ void	draw_map(SDL_Renderer *rnd, t_sect *sect, t_all *all)
 	int		i, j;
 	t_xyz	s;
 	t_xyz	f;
-	t_sect temp;
+	t_sect *temp;
 
 	i = 0;
-	
 	while(i < all->num_sectors)
 	{
 		j = 0;
-		temp = sect[i];
-		if (temp.select == 1){
-			SDL_SetRenderDrawColor(rnd, 255, 2, 2, 255);
-			printf("man!\n");}
-		else
+		temp = &sect[i];
+		if (temp != all->swap)
 			SDL_SetRenderDrawColor(rnd, 255, 255, 255, 255);
-		while (j < temp.npoints)
+		else
+			SDL_SetRenderDrawColor(rnd, 255, 2, 2, 255);
+		while (j < temp->npoints)
 		{
-			s = (t_xyz){temp.vertex[j].x * all->step,
-				temp.vertex[j].y * all->step, temp.floor * all->step/2};
-			f = (t_xyz){temp.vertex[j + 1].x * all->step,
-				temp.vertex[j + 1].y * all->step, temp.floor * all->step/2};
-			
-			// rotate(all, &s);
-			// rotate(all, &f);
-			isometric(all, &temp, &s, all->rot);
-			isometric(all, &temp, &f, all->rot);
-			line_sector(all, &temp, &s, &f);
-			
+			s = (t_xyz){(temp->vertex[j].x - all->mapsize.x/2) * all->step,
+				(temp->vertex[j].y - all->mapsize.y/2) * all->step,
+					(temp->floor - all->mapsize.z/4) * all->step/2};
+			f = (t_xyz){(temp->vertex[j + 1].x - all->mapsize.x/2) * all->step,
+				(temp->vertex[j + 1].y - all->mapsize.y/2) * all->step,
+					(temp->floor - all->mapsize.z/4) * all->step/2};
+			isometric(all, temp, &s, all->rot);
+			isometric(all, temp, &f, all->rot);
+			line_sector(all, temp, &s, &f);
 			//draw_wall(all, &temp, j, &s);
-
-			//SDL_RenderDrawLine(rnd, (int)s.x, (int)s.y, (int)f.x, (int)f.y);
 			//draw_circle(rnd, (int)s.x, (int)s.y, 3);
 			j++;
 		}

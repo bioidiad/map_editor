@@ -1,6 +1,24 @@
 #include "editor.h"
 // #include <sys/stat.h>
 
+void	get_map_whl(t_all *all)
+{
+	int i;
+	int x, y, z;
+
+	i = 0;
+	while(i < all->num_sectors)
+	{
+		x = (int)all->sectors[i].vertex->x;
+		y = (int)all->sectors[i].vertex->y;
+		z = (int)all->sectors[i].ceil;
+		all->map_whl.x = all->map_whl.x < x ? x : all->map_whl.x;
+		all->map_whl.y = all->map_whl.y < y ? y : all->map_whl.y;
+		all->map_whl.z = all->map_whl.z < z ? z : all->map_whl.z;
+		i++;
+	}
+}
+
 void	load_map(t_all *all)
 {
 	char	*line;
@@ -53,7 +71,6 @@ void	load_map(t_all *all)
 			sect->npoints = m /= 2; //количество соседей и вершин этого сектора (всегда одинаково)
 			sect->neighbors = malloc((m) * sizeof(*sect->neighbors));
 			sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
-			sect->select = 0;
 			//цикл запишет правую половину num массива, то есть соседей
 			for (n = 0; n < m; ++n)
 				sect->neighbors[n] = num[m + n];
@@ -79,6 +96,7 @@ void	load_map(t_all *all)
 		}
 	close(fd);
 	free(vert);
-	printf("data loaded\n");
-	// printf("map width = %f\nmap lenght = %f\nmap height = %f\n", all->mapsize.x, all->mapsize.y, all->mapsize.z);
+	//get_map_whl(all);
+	//printf("data loaded\nw = %f\nh = %f\nl = %f\n", all->map_whl.x, all->map_whl.y, all->map_whl.z);
+	printf("map width = %f\nmap lenght = %f\nmap height = %f\n", all->mapsize.x, all->mapsize.y, all->mapsize.z);
 }

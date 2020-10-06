@@ -11,7 +11,10 @@ void	key_press(t_all *all)
     	SDL_DestroyRenderer(all->sdl->renderer);
     	SDL_DestroyWindow(all->sdl->window);
 	    SDL_Quit();
-		// exit(0);
+		free(all->sectors);
+		free(all->sdl);
+		free(all);
+		exit(0);
 	}
 	// else if (keystate[SDL_SCANCODE_TAB])
 	// 	all->layer = all->layer == 0 ? 1 : 0;
@@ -46,7 +49,7 @@ void	button_click(t_button *buttons, SDL_MouseButtonEvent *event)
 	}
 }
 
-void	map_click(t_xyz *mouse, t_object *map, t_all *all)
+void	map_click(t_xyz *mouse, t_sect *sector, t_all *all)
 {
 	int x;
 	int y;
@@ -55,12 +58,11 @@ void	map_click(t_xyz *mouse, t_object *map, t_all *all)
 	x = (int)mouse->x;
 	y = (int)mouse->y;
 	i = 0;
-	if(map->sector)
+	if(sector)
 	{
-			
-			map->sector->select = map->sector->select == 0 ? 1 : 0;
-			printf("x = %d\ny = %d\nSector = %f:%f\nselected = %d\n", x, y,
-			map->sector->vertex->x, map->sector->vertex->y, map->sector->select);
+			all->swap = sector;
+			printf("x = %d\ny = %d\nSector = %d:%d\n", x, y,
+			(int)all->swap->vertex->x, (int)all->swap->vertex->y);
 	}
 	
 	
@@ -76,7 +78,7 @@ void	on_mouse(t_all *all, SDL_MouseButtonEvent *event)
 				all->mouse.z == 1)
 	{
 		all->mouse = (t_xyz){event->x - temp->x, event->y - temp->y};//пишем координаты мыши на карте
-		map_click(&all->mouse, &(all->map[event->y - temp->y][event->x - temp->x]), all);
+		map_click(&all->mouse, (all->map[(int)all->mouse.y][(int)all->mouse.x].sector), all);
 	}
 	else
 		button_click(all->buttons, event); // обработка кликов на панели управления

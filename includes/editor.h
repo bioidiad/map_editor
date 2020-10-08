@@ -119,7 +119,7 @@ typedef struct      s_all
 t_all               *init_all(); // инициализируем модули
 void                error_and_close(const char *file, const char *function); // аварийное завершение программы
 void                on_event(t_all *all, SDL_Event *event); //обработка событий
-void				load_map(t_all *all); // загрузка карты
+int					load_map(char *name, t_all *all); // загрузка карты
 int                 load_texture(char *file, t_all *all);// звгрузка текстур
 void                draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn);//отрисовка
 

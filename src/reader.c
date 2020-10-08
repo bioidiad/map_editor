@@ -19,7 +19,7 @@ void	get_map_whl(t_all *all)
 	}
 }
 
-void	load_map(t_all *all)
+int	load_map(char *name, t_all *all)
 {
 	char	*line;
 	char	word[256];
@@ -27,10 +27,16 @@ void	load_map(t_all *all)
 	int		fd;
 
 	all->sectors = NULL;
-	fd = open("map-clear.txt", O_RDONLY);
+	if (name)
+		fd = open(name = strdup(ft_strjoin(name, ".txt")), O_RDONLY);
+	else
+	{
+		name = strdup(ft_strjoin("new_map", ".txt"));
+		fd = open("new_map.txt", O_RDONLY);
+	}
 	if (fd < 0)
 	{
-		perror("map-clear.txt");
+		perror(name);
 		exit(1);
 	}
 	struct s_xy *vert = NULL, v;
@@ -62,7 +68,7 @@ void	load_map(t_all *all)
 			for (m = 0; sscanf(line += n, "%32s%n", word, &n) == 1 && word[0] != '#';)
 			{
 				num = realloc(num, ++m * sizeof(*num));
-				num[m - 1] = atoi(word);
+				num[m - 1] = ft_atoi(word);
                 //m хранит количество вершин + количество соседних секторов, причем первое == второму
                 //num хранит все числа принадлижащие одному сектору, кроме пола и потолка
                 //никаких разделителей между строк нет
@@ -99,4 +105,5 @@ void	load_map(t_all *all)
 	//get_map_whl(all);
 	//printf("data loaded\nw = %f\nh = %f\nl = %f\n", all->map_whl.x, all->map_whl.y, all->map_whl.z);
 	printf("map width = %f\nmap lenght = %f\nmap height = %f\n", all->mapsize.x, all->mapsize.y, all->mapsize.z);
+	return (1);
 }

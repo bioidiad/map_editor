@@ -19,12 +19,17 @@ void	interact(t_all *all)
 	}
 }
 
-int main()
+int main(int ac, char **av)
 {
     t_all           *all;
-    
+	
+	if(ac > 2)
+	{
+		printf("Enter correct map name or new map name!\n");
+		exit(0);
+	}
     all = init_all(); // инициализация всех модулей
-	load_map(all); //чтение и запись каты в структуры
-	if (load_texture("filename", all) == 0) //загрузка текстур
+	load_map(av[1], all);
+	if (load_texture(NULL, all) == 0) //загрузка текстур
 		interact(all); // основная функция взаимодействия
 }

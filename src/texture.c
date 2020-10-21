@@ -37,7 +37,7 @@ int     load_buttons(t_all *all)
     return (1);
 }
 
-int     load_texture(char *file, t_all *all)
+int     load_texture(t_all *all)
 {
     if(!(all->texture = get_texture("plain.bmp", all->sdl)))
         error_and_close(__FILE__, __FUNCTION__);

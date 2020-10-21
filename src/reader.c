@@ -12,48 +12,60 @@ void	get_map_whl(t_all *all)
 		x = (int)all->sectors[i].vertex->x;
 		y = (int)all->sectors[i].vertex->y;
 		z = (int)all->sectors[i].ceil;
-		all->map_whl.x = all->map_whl.x < x ? x : all->map_whl.x;
-		all->map_whl.y = all->map_whl.y < y ? y : all->map_whl.y;
-		all->map_whl.z = all->map_whl.z < z ? z : all->map_whl.z;
+		// all->map_whl.x = all->map_whl.x < x ? x : all->map_whl.x;
+		// all->map_whl.y = all->map_whl.y < y ? y : all->map_whl.y;
+		// all->map_whl.z = all->map_whl.z < z ? z : all->map_whl.z;
 		i++;
 	}
 }
 
-void	load_map(t_all *all)
+
+int	load_map(char *name, t_all *all)
 {
 	char	*line;
-	char	word[256];
+	char	word[6];
 	char	*ptr;
 	int		fd;
 
 	all->sectors = NULL;
-	fd = open("map-clear.txt", O_RDONLY);
+	if (name)
+		fd = open(ft_strjoin(name, ".txt"), O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
+	else
+		fd = open("new_map.txt", O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd < 0)
 	{
-		perror("map-clear.txt");
+		perror(name);
 		exit(1);
 	}
-	struct s_xy *vert = NULL, v;
+	t_xy 	*vert = NULL;
+	t_xy	v;
 	int n, m, NumVertices = 0;
+
 	line = (char*)malloc(sizeof(char) * BUFF_SIZE + 1);
 	all->mapsize = (t_xyz){0, 0, 0};
+
 	while (get_next_line(fd, &line))
 		switch (sscanf(line, "%32s%n", word, &n) == 1 ? word[0] : '\0')
+		/*считывает в word строку, в n - кол-во символов в строке
+		если в строке более 32х символов - следующий вызов с того же места*/
 		{
-		case 'v': // vertex
+		case 'v': // если word[0]=='v'
 			for (sscanf(line += n, "%f%n", &v.y, &n); sscanf(line += n, "%f%n", &v.x, &n) == 1;)
+			/* пока сканф возвращает 1, считывает в v.x и v.y целые числа, в n - количество считанных символов
+			сдвигаясь на n символов перед считыванием */
 			{
-				vert = realloc(vert, ++NumVertices * sizeof(*vert));
+				vert = ft_realloc(vert, ++NumVertices * sizeof(*vert));
 				vert[NumVertices - 1] = v;
-				all->mapsize.x = v.x > all->mapsize.x ? v.x : all->mapsize.x;
-				all->mapsize.y = v.y > all->mapsize.y ? v.y : all->mapsize.y;
+			
                 //NumVertices общее количество вершин
                 //vert массив всех вершин где к примеру строка vertex	0	0 6 28 хранится как 0 0, 0 6, 0 28
                 //никаких разделителей между строк нет
+				all->mapsize.x = v.x > all->mapsize.x ? v.x : all->mapsize.x;
+				all->mapsize.y = v.y > all->mapsize.y ? v.y : all->mapsize.y;
 			}
 			break;
 		case 's': // sector
-			all->sectors = realloc(all->sectors, ++all->num_sectors * sizeof(*all->sectors));
+			all->sectors = ft_realloc(all->sectors, ++all->num_sectors * sizeof(*all->sectors));
 			t_sect *sect = &all->sectors[all->num_sectors - 1];
 			int *num = NULL;
 			//считывает пол и потолок
@@ -61,8 +73,8 @@ void	load_map(t_all *all)
 			all->mapsize.z = sect->ceil > all->mapsize.z ? sect->ceil : all->mapsize.z;
 			for (m = 0; sscanf(line += n, "%32s%n", word, &n) == 1 && word[0] != '#';)
 			{
-				num = realloc(num, ++m * sizeof(*num));
-				num[m - 1] = atoi(word);
+				num = ft_realloc(num, ++m * sizeof(*num));
+				num[m - 1] = ft_atoi(word);
                 //m хранит количество вершин + количество соседних секторов, причем первое == второму
                 //num хранит все числа принадлижащие одному сектору, кроме пола и потолка
                 //никаких разделителей между строк нет
@@ -98,5 +110,6 @@ void	load_map(t_all *all)
 	free(vert);
 	//get_map_whl(all);
 	//printf("data loaded\nw = %f\nh = %f\nl = %f\n", all->map_whl.x, all->map_whl.y, all->map_whl.z);
-	printf("map width = %f\nmap lenght = %f\nmap height = %f\n", all->mapsize.x, all->mapsize.y, all->mapsize.z);
+	//printf("map width = %f\nmap lenght = %f\nmap height = %f\n", all->mapsize.x, all->mapsize.y, all->mapsize.z);
+	return (0);
 }

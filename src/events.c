@@ -17,72 +17,110 @@ void	key_press(t_all *all)
 		exit(0);
 	}
 	// else if (keystate[SDL_SCANCODE_TAB])
-	// 	all->layer = all->layer == 0 ? 1 : 0;
-	else if (keystate[SDL_SCANCODE_RIGHT])
-		all->rot.x += 1;
-	else if (keystate[SDL_SCANCODE_LEFT])
-		all->rot.x -= 1;
-	else if (keystate[SDL_SCANCODE_UP])
-		all->rot.y += 1;
-	else if (keystate[SDL_SCANCODE_DOWN])
-		all->rot.y -=1;
+	// // 	all->layer = all->layer == 0 ? 1 : 0;
+	// else if (keystate[SDL_SCANCODE_RIGHT])
+	// 	all->rot.x += 1;
+	// else if (keystate[SDL_SCANCODE_LEFT])
+	// 	all->rot.x -= 1;
+	// else if (keystate[SDL_SCANCODE_UP])
+	// 	all->rot.y += 1;
+	// else if (keystate[SDL_SCANCODE_DOWN])
+	// 	all->rot.y -=1;
 }
 
-void	button_click(t_button *buttons, SDL_MouseButtonEvent *event)
+void	button_click(t_all *all, t_button *buttons, SDL_MouseButtonEvent *event)
 {
 	int	i;
 	int	dx;
 	int	dy;
 
 	i = 0;
-	while(i < BUTTONS)
+	while(i < BUTTONS && all->mouse.z == 1)
 	{
-		buttons[i].state = 0;
 		dx = event->x - buttons[i].object.dstrect.x;
 		dy = event->y - buttons[i].object.dstrect.y;
 		if(dx > 0 && dy > 0 && dx < PICT_WIDTH && dy < PICT_HEIGHT)
 		{
-			buttons[i].state = 1;
-			buttons->swap = buttons[i].object.texture;
+			buttons[i].state = buttons[i].state == 1 ? 0 : 1;
+			all->edit.function = i;
+			//buttons->swap = buttons[i].object.texture;
 		}
+		else
+			buttons[i].state = 0;		
 		i++;
 	}
 }
 
-void	map_click(t_xyz *mouse, t_sect *sector, t_all *all)
+t_xyz	coordinator(t_all *all, int x, int y, t_xyz rot)
 {
-	int x;
-	int y;
-	int i;
+	t_xyz temp;
+	int z;
+	// rot = (t_xyz){-rot.x, -rot.y, -rot.z};
 
-	x = (int)mouse->x;
-	y = (int)mouse->y;
-	i = 0;
-	if(sector)
-	{
-			all->swap = sector;
-			printf("x = %d\ny = %d\nSector = %d:%d\n", x, y,
-			(int)all->swap->vertex->x, (int)all->swap->vertex->y);
-	}
-	
-	
+	// z = 0;
+	// rot = (t_xyz){(M_PI / 25 * rot.x), (M_PI / 25 * rot.y), (M_PI / 135 * rot.z) * -1};
+	// temp.y = y * cos(rot.x) + z * sin(rot.x) - all->area.h/2;
+	// temp.z = -(y * sin(rot.x)) + z * cos(rot.x);
+	// y = temp.y;
+	// z = temp.z;
+	// temp.x = x * cos(rot.y) + z * sin(rot.y) - all->area.w/2;
+	// temp.z = -(x * sin(rot.y)) + z * cos(rot.y);
+	// x = temp.x;
+	// z = temp.z;
+	// temp.x = x * cos(rot.z) - y * sin(rot.z);
+	// temp.y = x * sin(rot.z) + y * cos(rot.z);
+	temp.x = x / all->step - (all->area.w/all->step/2 - all->mapsize.x/2);
+	temp.y = y / all->step - (all->area.h/all->step/2 - all->mapsize.y/2);
+	temp.z = z / all->step + all->mapsize.z;
+	return(temp);
+}
+
+// void	draw_sector(t_all *all, t_edit *new, int x, int y)
+// {
+// 	t_xyz n = coordinator(all, x, y, all->rot);
+// 	printf("x = %d, y = %d\n", n.x, n.y);
+// }
+
+
+void	closest_point(t_all *all, t_xyint point, t_xyz mouse)
+{
+	all->point.x = round(((float)point.x - all->area.x) / all->step);
+	all->point.y = round(((float)point.y - all->area.y) / all->step);
 }
 
 void	on_mouse(t_all *all, SDL_MouseButtonEvent *event)
 {
 	SDL_Rect	*temp;
+	int			x;
+	int			y;
 
+	x = all->mouse.x;
+	y = all->mouse.y;
 	temp = &all->area;
+
 	if (event->x >= temp->x && event->x <= (temp->x + temp->w) &&
-			event->y >= temp->y && event->y <= (temp->y + temp->h) &&
-				all->mouse.z == 1)
+			event->y >= temp->y && event->y <= (temp->y + temp->h))// &&
+				// all->mouse.z == 0 && all->buttons[0].state == 1)
 	{
-		all->mouse = (t_xyz){event->x - temp->x, event->y - temp->y};//пишем координаты мыши на карте
-		map_click(&all->mouse, (all->map[(int)all->mouse.y][(int)all->mouse.x].sector), all);
+		SDL_GetMouseState(&all->point.x, &all->point.y);
+		closest_point(all, all->point, all->mouse);
+	
+		if (all->mouse.z == 1)
+		{
+			all->mouse = (t_xyz){event->x - temp->x, event->y - temp->y};//пишем координаты мыши на карте
+			map_click(&all->mouse, (all->map[y][x].sector), all);
+		}
 	}
 	else
-		button_click(all->buttons, event); // обработка кликов на панели управления
-
+		button_click(all, all->buttons, event); // обработка кликов на панели управления
+		// else if (event->x >= temp->x && event->x <= (temp->x + temp->w) &&
+		// 		event->y >= temp->y && event->y <= (temp->y + temp->h))// &&
+		// 			// all->mouse.z == 0 && all->buttons[0].state == 1)
+		// {
+		// 	SDL_GetMouseState(&all->point.x, &all->point.y);
+		// 	closest_point(all, all->point, all->mouse);
+		// }
+	
 }
 
 void	on_event(t_all *all, SDL_Event *event)

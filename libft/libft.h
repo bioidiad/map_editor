@@ -104,6 +104,7 @@ int					ft_print_params(int argc, char const *argv[]);
 int					ft_sort_params(int argc, char const *argv[]);
 void				ft_expand_str(int a, char *str);
 void				ft_cut(char *str);
+void				*ft_realloc(void *ptr, size_t size);
 int					ft_skip(int j, char *str);
 int					get_next_line(const int fd, char **line);
 

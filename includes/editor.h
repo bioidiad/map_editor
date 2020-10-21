@@ -15,7 +15,7 @@
 # define HEIGHT 700
 # define FPS 200
 # define PICT_HEIGHT 50
-# define PICT_WIDTH 50
+# define PICT_WIDTH 90
 // # define OBJECTS (MAP_HEIGHT * MAP_WIDTH)
 # define BUTTONS 10
 # define OBJ_SIDE 57
@@ -27,6 +27,12 @@ typedef struct	    s_sdl
 	SDL_Window	    *window;
 	SDL_Renderer	*renderer;
 }				    t_sdl;
+
+typedef struct      s_xyint
+{
+    int           x;
+    int           y;
+}                   t_xyint;
 
 typedef struct      s_xy
 {
@@ -62,17 +68,14 @@ typedef struct      s_button
 {
     t_object        object;
     int             state;
-    SDL_Texture     *swap;
 }                   t_button;
 
-// typedef struct      s_line
-// {
-//     int             state;
-//     int             x1;
-//     int             y1;
-//     int             x2;
-//     int             y2;
-// }                   t_line;
+typedef struct      s_edit
+{
+    int             function;
+	t_xyz			coord;
+	t_sect			new_sector;
+}                   t_edit;
 
 typedef	struct	s_player
 {
@@ -98,29 +101,34 @@ typedef	struct	s_player
 
 typedef struct      s_all
 {
-    t_player        player;
-    t_sect          *swap;
-    t_sect          *sectors;
-    unsigned int    num_sectors;
-	int 			step;
-	float			angle;
-	t_xyz			rot;
-    t_xyz			mouse;
-	t_xyz			mapsize;
-    SDL_Rect        area;
-    SDL_Texture     *texture;
-    t_object        map[690][876];
-	t_xyz			map_whl;
-    t_button        buttons[BUTTONS];
-    
-    t_sdl           *sdl;
+    t_player        player;// переменная игрока. 
+    t_sect          *swap;//указатель на выбранный сектор
+    t_sect          *sectors;//массив с данными о секторах
+	t_sect			*temp;			
+    unsigned int    num_sectors;//количество секторов
+	int 			step;//шаг (масштаб)
+	// float			angle;//угол поворота
+	// t_xyz			rot;//
+	t_xyint			point;//координаты ближайшей точки курсора
+    t_xyz			mouse;//координаты мыши на area
+	t_xyz			mapsize;//размер карты в исходной СИ
+    SDL_Rect        area;//область редактирования
+    SDL_Texture     *texture;//текстура-подложка 
+    t_object        map[690][876];//массив пикселей области  area
+	// t_xyz			map_whl;//
+    t_button        buttons[BUTTONS];//кнопки
+    t_edit			edit;//
+    t_sdl           *sdl;//
 }                   t_all;
 
 t_all               *init_all(); // инициализируем модули
 void                error_and_close(const char *file, const char *function); // аварийное завершение программы
 void                on_event(t_all *all, SDL_Event *event); //обработка событий
-void				load_map(t_all *all); // загрузка карты
-int                 load_texture(char *file, t_all *all);// звгрузка текстур
+void				map_click(t_xyz *mouse, t_sect *sector, t_all *all);
+int					load_map(char *name, t_all *all); // загрузка карты
+int                 load_texture(t_all *all);// звгрузка текстур
 void                draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn);//отрисовка
+int					write_map(char *name, t_all *all);
+void				draw_circle(SDL_Renderer *rnd, int x, int y, int r);
 
 # endif

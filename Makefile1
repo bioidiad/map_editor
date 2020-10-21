@@ -1,0 +1,58 @@
+
+NAME = DOOM
+FLAGS = #-Wall -Werror -Wextra
+#CFLAGS = -I SDL2/SDL.h -lSDL2
+CFLAGS = -I SDL2/SDL.h -L lib -l SDL-2.0.0
+
+SRCDIR	= ./src
+INCDIR	= ./includes
+OBJDIR	= ./obj
+
+SRC		= main.c \
+		  draw.c \
+		  errors.c \
+		  events.c \
+		  init.c \
+		  texture.c \
+		  reader.c \
+
+OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.c=.o))
+CC		= gcc
+
+# MLX		= ./minilibx/
+# MLX_LNK	= -L $(MLX) -l mlx -lXext -lX11
+
+# MLX_INC	= -I $(MLX)
+# MLX_LIB	= $(addprefix $(MLX),mlx.a)
+
+FT		= ./libft/
+FT_LIB	= $(addprefix $(FT),libft.a)
+FT_INC	= -I ./libft
+FT_LNK	= -L ./libft -l ft -l pthread
+
+all: obj $(FT_LIB) $(MLX_LIB) $(NAME)
+
+obj:
+	mkdir -p $(OBJDIR)
+
+$(OBJDIR)/%.o:$(SRCDIR)/%.c
+	$(CC) $(FLAGS) $(FT_INC) -I $(INCDIR) -o $@ -c $<
+
+$(FT_LIB):
+	@make -C $(FT)
+
+# $(MLX_LIB):
+# 	@make -C $(MLX)
+
+$(NAME): $(OBJ)
+	$(CC) $(OBJ) $(FT_LNK) -lm $(CFLAGS) -o $(NAME)
+
+clean:
+	rm -rf $(OBJDIR)
+	make -C $(FT) clean
+
+fclean: clean
+	rm -rf $(NAME)
+	make -C $(FT) fclean
+
+re: fclean all

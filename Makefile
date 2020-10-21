@@ -1,8 +1,13 @@
 
 NAME = DOOM
 FLAGS = #-Wall -Werror -Wextra
-CFLAGS = -I SDL2/SDL.h -lSDL2
-#CFLAGS = -I SDL/SDL.h -L lib -l SDL-2.0.0
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	CFLAGS = -I SDL2/SDL.h -lSDL2
+endif
+ifeq ($(UNAME_S),Darwin)
+	CFLAGS = -I SDL/SDL.h -L lib -l SDL2-2.0.0
+endif
 
 SRCDIR	= ./src
 INCDIR	= ./includes
@@ -15,9 +20,11 @@ SRC		= main.c \
 		  init.c \
 		  texture.c \
 		  reader.c \
+		  write.c \
+		  map_events.c\
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.c=.o))
-CC		= gcc
+CC		= gcc -g
 
 # MLX		= ./minilibx/
 # MLX_LNK	= -L $(MLX) -l mlx -lXext -lX11

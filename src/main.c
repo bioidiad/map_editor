@@ -15,16 +15,30 @@ void	interact(t_all *all)
 			if (cur_time - last_time > FPS)
 				break ;
 		}
-		draw_all(all, all->sdl->renderer, all->buttons); // отрисовка
+		if(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP || event.type == SDL_MOUSEMOTION
+			|| event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEBUTTONDOWN)
+		{
+			draw_all(all, all->sdl->renderer, all->buttons);
+			event.type = 0; // отрисовка
+		}
 	}
 }
 
-int main()
+int main(int ac, char **av)
 {
     t_all           *all;
-    
+	
+	if(ac > 2)
+	{
+		printf("Enter correct map name or new map name!\n");
+		exit(0);
+	}
     all = init_all(); // инициализация всех модулей
-	load_map(all); //чтение и запись каты в структуры
-	if (load_texture("filename", all) == 0) //загрузка текстур
-		interact(all); // основная функция взаимодействия
+	if (load_map(av[1], all) != 0)
+		error_and_close(__FILE__, __FUNCTION__);
+	if (load_texture(all) != 0)
+		error_and_close(__FILE__, __FUNCTION__); //загрузка текстур
+	interact(all); // основная функция взаимодействия
+	write_map(av[1], all);
+	return (0);
 }

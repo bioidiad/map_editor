@@ -22,6 +22,14 @@
 // # define LAYER 2
 # define EYE_HEIGHT 6
 
+typedef	struct		s_color
+{
+	int				r;
+	int				g;
+	int				b;
+	int				a;
+}					t_color;
+
 typedef struct	    s_sdl
 {
 	SDL_Window	    *window;
@@ -80,23 +88,25 @@ typedef struct      s_edit
 typedef	struct	s_player
 {
 	t_xyz		where;			//	Current position
-	t_xyz		velocity;		//	Current motion vector
-	float		angle;			//	Looking towards
-	float		anglesin;		//	and sin()
-	float		anglecos;		//	and cos()
-	float		temp_yaw;		//TODO WTF
-	float		yaw;			//	and player angle when looking up and down
-	unsigned	sector;
-	int			wsad[4];
-	float		move_vec[2];
-	int			ground;
-	int			falling;
-	int			moving;
-	int			ducking;
-	int			pushing;
-	float		acceleration;
-	float		eyeheight;
-	SDL_Event	event;
+	t_xyz		velocity;
+	SDL_Texture	*picture;
+	int			picked;		//	Current motion vector
+	// float		angle;			//	Looking towards
+	// float		anglesin;		//	and sin()
+	// float		anglecos;		//	and cos()
+	// float		temp_yaw;		//TODO WTF
+	// float		yaw;			//	and player angle when looking up and down
+	// unsigned	sector;
+	// int			wsad[4];
+	// float		move_vec[2];
+	// int			ground;
+	// int			falling;
+	// int			moving;
+	// int			ducking;
+	// int			pushing;
+	// float		acceleration;
+	// float		eyeheight;
+	// SDL_Event	event;
 }				t_player;
 
 typedef struct      s_all
@@ -112,6 +122,8 @@ typedef struct      s_all
 	t_xyint			point;//координаты ближайшей точки курсора
     t_xyz			mouse;//координаты мыши на area
 	t_xyz			mapsize;//размер карты в исходной СИ
+	t_xy			min_coord;
+	t_xy			max_coord;
     SDL_Rect        area;//область редактирования
     SDL_Texture     *texture;//текстура-подложка 
     t_object        map[690][876];//массив пикселей области  area
@@ -129,6 +141,8 @@ int					load_map(char *name, t_all *all); // загрузка карты
 int                 load_texture(t_all *all);// звгрузка текстур
 void                draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn);//отрисовка
 int					write_map(char *name, t_all *all);
+void    			draw_fill_rect(t_all *all, SDL_Rect area, t_color *color);
+void				draw_line(t_all *all, t_xyz *start, t_xyz *fin);
 void				draw_circle(SDL_Renderer *rnd, int x, int y, int r);
 
 # endif

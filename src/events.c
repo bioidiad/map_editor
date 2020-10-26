@@ -16,12 +16,12 @@ void	key_press(t_all *all)
 		free(all);
 		exit(0);
 	}
-	// else if (keystate[SDL_SCANCODE_TAB])
-	// // 	all->layer = all->layer == 0 ? 1 : 0;
-	// else if (keystate[SDL_SCANCODE_RIGHT])
-	// 	all->rot.x += 1;
-	// else if (keystate[SDL_SCANCODE_LEFT])
-	// 	all->rot.x -= 1;
+	else if (keystate[SDL_SCANCODE_TAB])
+		write_map("new", all);
+	else if (keystate[SDL_SCANCODE_RIGHT])
+		all->step += 1;
+	else if (keystate[SDL_SCANCODE_LEFT])
+		all->step -= (all->step > 1) ? 1 : 0;
 	// else if (keystate[SDL_SCANCODE_UP])
 	// 	all->rot.y += 1;
 	// else if (keystate[SDL_SCANCODE_DOWN])
@@ -49,6 +49,7 @@ void	button_click(t_all *all, t_button *buttons, SDL_MouseButtonEvent *event)
 			buttons[i].state = 0;		
 		i++;
 	}
+	all->player.picked = buttons[2].state == 1 ? 1 : 0;
 }
 
 t_xyz	coordinator(t_all *all, int x, int y, t_xyz rot)

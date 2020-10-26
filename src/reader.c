@@ -1,25 +1,6 @@
 #include "editor.h"
 // #include <sys/stat.h>
 
-void	get_map_whl(t_all *all)
-{
-	int i;
-	int x, y, z;
-
-	i = 0;
-	while(i < all->num_sectors)
-	{
-		x = (int)all->sectors[i].vertex->x;
-		y = (int)all->sectors[i].vertex->y;
-		z = (int)all->sectors[i].ceil;
-		// all->map_whl.x = all->map_whl.x < x ? x : all->map_whl.x;
-		// all->map_whl.y = all->map_whl.y < y ? y : all->map_whl.y;
-		// all->map_whl.z = all->map_whl.z < z ? z : all->map_whl.z;
-		i++;
-	}
-}
-
-
 int	load_map(char *name, t_all *all)
 {
 	char	*line;
@@ -54,18 +35,22 @@ int	load_map(char *name, t_all *all)
 			/* пока сканф возвращает 1, считывает в v.x и v.y целые числа, в n - количество считанных символов
 			сдвигаясь на n символов перед считыванием */
 			{
-				vert = ft_realloc(vert, ++NumVertices * sizeof(*vert));
+				vert = ft_realloc(vert, ++NumVertices * sizeof(t_xy));
 				vert[NumVertices - 1] = v;
 			
                 //NumVertices общее количество вершин
                 //vert массив всех вершин где к примеру строка vertex	0	0 6 28 хранится как 0 0, 0 6, 0 28
                 //никаких разделителей между строк нет
+				
 				all->mapsize.x = v.x > all->mapsize.x ? v.x : all->mapsize.x;
 				all->mapsize.y = v.y > all->mapsize.y ? v.y : all->mapsize.y;
+				all->max_coord = (t_xy){all->mapsize.x, all->mapsize.y};
+				all->min_coord.x = v.x < all->min_coord.x ? v.x : all->min_coord.x;
+				all->min_coord.y = v.y < all->min_coord.y ? v.y : all->min_coord.y;
 			}
 			break;
 		case 's': // sector
-			all->sectors = ft_realloc(all->sectors, ++all->num_sectors * sizeof(*all->sectors));
+			all->sectors = ft_realloc(all->sectors, ++all->num_sectors * sizeof(t_sect));
 			t_sect *sect = &all->sectors[all->num_sectors - 1];
 			int *num = NULL;
 			//считывает пол и потолок
@@ -81,8 +66,8 @@ int	load_map(char *name, t_all *all)
 			}
 
 			sect->npoints = m /= 2; //количество соседей и вершин этого сектора (всегда одинаково)
-			sect->neighbors = malloc((m) * sizeof(*sect->neighbors));
-			sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
+			sect->neighbors = malloc((m) * sizeof(signed char));
+			sect->vertex = malloc((m + 1) * sizeof(t_xy));
 			//цикл запишет правую половину num массива, то есть соседей
 			for (n = 0; n < m; ++n)
 				sect->neighbors[n] = num[m + n];
@@ -99,17 +84,14 @@ int	load_map(char *name, t_all *all)
 			sscanf(line += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
 			all->player.where = (t_xyz){v.x, v.y, 0};
 			all->player.velocity = (t_xyz){0, 0, 0};
-			all->player.angle = angle;
-			all->player.anglecos = 0;
-			all->player.anglesin = 0;
-			all->player.yaw = 0;
-			all->player.sector = n;
-			all->player.where.z = all->sectors[all->player.sector].floor + EYE_HEIGHT;
+			// all->player.angle = angle;
+			// all->player.anglecos = 0;
+			// all->player.anglesin = 0;
+			// all->player.yaw = 0;
+			// all->player.sector = n;
+			// all->player.where.z = all->sectors[all->player.sector].floor + EYE_HEIGHT;
 		}
 	close(fd);
 	free(vert);
-	//get_map_whl(all);
-	//printf("data loaded\nw = %f\nh = %f\nl = %f\n", all->map_whl.x, all->map_whl.y, all->map_whl.z);
-	//printf("map width = %f\nmap lenght = %f\nmap height = %f\n", all->mapsize.x, all->mapsize.y, all->mapsize.z);
 	return (0);
 }

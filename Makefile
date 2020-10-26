@@ -22,6 +22,7 @@ SRC		= main.c \
 		  reader.c \
 		  write.c \
 		  map_events.c\
+		  draw_utils.c\
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.c=.o))
 CC		= gcc -g

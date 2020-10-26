@@ -37,11 +37,20 @@ int     load_buttons(t_all *all)
     return (1);
 }
 
+int     load_player(t_all *all)
+{
+    if(!(all->player.picture = get_texture("player.bmp", all->sdl)))
+        return(0);
+    return(1);
+}
+
 int     load_texture(t_all *all)
 {
     if(!(all->texture = get_texture("plain.bmp", all->sdl)))
         error_and_close(__FILE__, __FUNCTION__);
     if (!(load_buttons(all)))
-        error_and_close(__FILE__, __FUNCTION__);   
+        error_and_close(__FILE__, __FUNCTION__);
+    if (!(load_player(all)))
+        error_and_close(__FILE__, __FUNCTION__);
     return (0);
 }

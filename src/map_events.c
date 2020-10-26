@@ -3,29 +3,51 @@
 void    new_sector(t_all *all, int x, int y)
 {
     int i = 0;
-    if(all->temp->npoints != 0)
-        all->temp->vertex = ft_realloc(all->temp->vertex, (++all->temp->npoints) * sizeof(all->temp->vertex));
-    else
-        all->temp->vertex = malloc((++all->temp->npoints) * sizeof(all->temp->vertex));
+
+	all->min_coord.x = x < all->min_coord.x ? x : all->min_coord.x;
+	all->min_coord.y = y < all->min_coord.y ? y : all->min_coord.y;
+	all->max_coord.x = x > all->max_coord.x ? x : all->max_coord.x;
+	all->max_coord.y = y > all->max_coord.y ? y : all->max_coord.y;
+
+    all->temp->vertex = ft_realloc(all->temp->vertex, (++all->temp->npoints) * sizeof(t_xy));
 	all->temp->vertex[all->temp->npoints - 1] = (t_xy){x, y};
 	if (all->temp->vertex[0].x == x && all->temp->vertex[0].y == y && all->temp->npoints != 1)
 	{
-		all->sectors = ft_realloc(all->sectors, ++all->num_sectors * sizeof(*all->sectors));
-		all->sectors[all->num_sectors - 1].vertex = malloc(sizeof(all->temp->vertex) * all->temp->npoints);
-		ft_memcpy(&all->sectors[all->num_sectors - 1], &all->temp, sizeof(all->temp));
-		ft_memcpy(&all->sectors[all->num_sectors - 1].vertex, &all->temp->vertex, 
-		 	(sizeof(all->temp->vertex) * all->temp->npoints));
+		all->sectors = ft_realloc(all->sectors, ++all->num_sectors * sizeof(t_sect));
+		all->sectors[all->num_sectors - 1].vertex = malloc(sizeof(t_xy) * all->temp->npoints);
+		all->sectors[all->num_sectors - 1].npoints = all->temp->npoints;
+		all->sectors[all->num_sectors - 1].floor = all->temp->floor;
+		all->sectors[all->num_sectors - 1].ceil = all->temp->ceil; 
+		while( i < all->temp->npoints)
+		{
+			all->sectors[all->num_sectors - 1].vertex[i] = all->temp->vertex[i];
+			i++;
+		}
+		all->sectors[all->num_sectors - 1].npoints--;
+		// all->sectors[all->num_sectors - 1].vertex[0] = (t_xy){all->temp->vertex[0].x, all->temp->vertex[0].y};
+		printf("%p\n%p\n", all->temp->vertex, all->sectors[all->num_sectors-1].vertex);
 		ft_memdel((void*)&all->temp->vertex);
 		all->temp->npoints = 0;
-	}	
+		
 	
 /**********************test**************/
-		// while( i < all->temp.npoints)
-		// {
-		// 	printf("vertex %d = %d, %d\n", i, (int)all->sectors[all->num_sectors - 1].vertex[i].x, 
-		// 		(int)all->sectors[all->num_sectors - 1].vertex[i].y);
-		// 	i++;
-		// }
+		i = 0;
+		while( i < all->sectors[all->num_sectors - 1].npoints)
+		{
+			printf("vertex %d = %d, %d, points = %d\n", i, (int)all->sectors[all->num_sectors - 1].vertex[i].x, 
+				(int)all->sectors[all->num_sectors - 1].vertex[i].y, 
+				(int)all->sectors[all->num_sectors - 1].npoints);
+			i++;
+		}
+		// exit(0);
+	}
+}
+
+void    set_player(t_all *all, int x, int y)
+{
+	all->player.where = (t_xyz){x, y, 0};
+	all->player.picked = 0;
+	all->buttons[2].state = 0;
 }
 
 void	map_click(t_xyz *mouse, t_sect *sector, t_all *all)
@@ -53,7 +75,8 @@ void	map_click(t_xyz *mouse, t_sect *sector, t_all *all)
 	}
     else if(all->buttons[2].state == 1)
     {
-		// set_player(all, x, y);
+		all->player.where.z = 0;
+		set_player(all, x, y);
 	}
     else if(all->buttons[3].state == 1)
     {

@@ -1,20 +1,21 @@
 #include "editor.h"
 
-SDL_Texture	*get_texture(char *file, t_sdl *sdl)
+SDL_Surface	*get_texture(char *file, t_sdl *sdl)
 {
 	SDL_Surface		*surface;
-    SDL_Texture     *texture;
+    // SDL_Texture     *texture;
     char            *dir;
 
     dir = (char*)malloc(sizeof(char) * (ft_strlen(file) + 10));
     dir = ft_strjoin("textures/", file);
 	if(!(surface = SDL_LoadBMP(dir)))
         error_and_close(__FILE__, __FUNCTION__);
-    if(!(texture = SDL_CreateTextureFromSurface(sdl->renderer, surface)))
-        error_and_close(__FILE__, __FUNCTION__);
+    // if(!(texture = SDL_CreateTextureFromSurface(sdl->renderer, surface)))
+    //     error_and_close(__FILE__, __FUNCTION__);
     free(dir);
-    SDL_FreeSurface(surface);
-	return (texture);
+    // SDL_FreeSurface(surface);
+	// return (texture);
+    return(surface);
 }
 
 int     load_buttons(t_all *all)

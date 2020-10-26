@@ -38,6 +38,8 @@ int main(int ac, char **av)
 		error_and_close(__FILE__, __FUNCTION__);
 	if (load_texture(all) != 0)
 		error_and_close(__FILE__, __FUNCTION__); //загрузка текстур
+	draw_texture(all->sdl->renderer, (SDL_Rect){0,0, WIDTH, HEIGHT}, all->texture);
+	
 	interact(all); // основная функция взаимодействия
 	write_map(av[1], all);
 	return (0);

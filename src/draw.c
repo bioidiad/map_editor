@@ -138,7 +138,9 @@ void	draw_player(t_all *all, SDL_Renderer *rnd, t_player *player)
 	 		 all->step, all->step};
 	else if (all->player.picked == 1)
 		loc = (SDL_Rect){all->point.x * all->step, all->point.y * all->step, all->step, all->step};
-	SDL_RenderCopy(rnd, player->picture, NULL, &loc);
+	draw_texture(rnd, loc, player->picture);
+
+	// SDL_RenderCopy(rnd, player->picture, NULL, &loc);
 }
 
 void	draw_area(SDL_Renderer *rnd, t_all *all)
@@ -166,15 +168,16 @@ void	draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn)
 	i = 0;
 	if (SDL_RenderSetViewport(rnd, NULL) != 0)
 		exit(0);
-    SDL_RenderCopy(rnd, all->texture, NULL, NULL);
-	while (i++ <= BUTTONS)
+	// draw_texture(rnd, (SDL_Rect){0,0, WIDTH, HEIGHT}, all->texture);
+    // SDL_RenderCopy(rnd, all->texture, NULL, NULL);
+	while (i++ < BUTTONS)
 	{
         SDL_SetRenderDrawColor(rnd, 250, 250, 250, 70);
 		if(all->buttons[i - 1].state == 1)
             draw_fill_rect(all, btn[i - 1].object.dstrect, &(t_color){250, 250, 250, 70});
-
 			//SDL_RenderFillRect(rnd, &btn[i - 1].object.dstrect);
-        SDL_RenderCopy(rnd, btn[i - 1].object.texture, NULL, &btn[i - 1].object.dstrect);
+		draw_texture(rnd, btn[i - 1].object.dstrect, btn[i - 1].object.texture);
+        // SDL_RenderCopy(rnd, btn[i - 1].object.texture, NULL, &btn[i - 1].object.dstrect);
     } 
     // if(all->layer == 1)
 		draw_area(rnd, all);

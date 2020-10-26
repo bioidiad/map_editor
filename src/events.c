@@ -7,7 +7,7 @@ void	key_press(t_all *all)
 	keystate = SDL_GetKeyboardState(NULL);
 	if (keystate[SDL_SCANCODE_ESCAPE])
 	{
-		SDL_DestroyTexture(all->texture);
+		//SDL_DestroyTexture(all->texture);
     	SDL_DestroyRenderer(all->sdl->renderer);
     	SDL_DestroyWindow(all->sdl->window);
 	    SDL_Quit();

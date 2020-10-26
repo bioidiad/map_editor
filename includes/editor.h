@@ -68,7 +68,9 @@ typedef struct      s_sect
 typedef struct      s_object
 {
     t_sect			*sector;
-	SDL_Texture		*texture;
+	// SDL_Texture		*texture;
+	SDL_Surface		*texture;
+
     SDL_Rect        dstrect;
 }                   t_object;
 
@@ -89,7 +91,9 @@ typedef	struct	s_player
 {
 	t_xyz		where;			//	Current position
 	t_xyz		velocity;
-	SDL_Texture	*picture;
+	// SDL_Texture	*picture;
+	SDL_Surface	*picture;
+
 	int			picked;		//	Current motion vector
 	// float		angle;			//	Looking towards
 	// float		anglesin;		//	and sin()
@@ -125,7 +129,9 @@ typedef struct      s_all
 	t_xy			min_coord;
 	t_xy			max_coord;
     SDL_Rect        area;//область редактирования
-    SDL_Texture     *texture;//текстура-подложка 
+    // SDL_Texture     *texture;//текстура-подложка 
+    SDL_Surface     *texture;//текстура-подложка 
+
     t_object        map[690][876];//массив пикселей области  area
 	// t_xyz			map_whl;//
     t_button        buttons[BUTTONS];//кнопки
@@ -141,6 +147,7 @@ int					load_map(char *name, t_all *all); // загрузка карты
 int                 load_texture(t_all *all);// звгрузка текстур
 void                draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn);//отрисовка
 int					write_map(char *name, t_all *all);
+void    			draw_texture(SDL_Renderer *rnd, SDL_Rect area, SDL_Surface *txt);
 void    			draw_fill_rect(t_all *all, SDL_Rect area, t_color *color);
 void				draw_line(t_all *all, t_xyz *start, t_xyz *fin);
 void				draw_circle(SDL_Renderer *rnd, int x, int y, int r);

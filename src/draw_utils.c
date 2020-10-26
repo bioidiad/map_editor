@@ -46,7 +46,7 @@ void	draw_circle(SDL_Renderer *rnd, int x, int y, int r)
 		i = 0;
 		while (i++ < 50)
 		{
-			angle = (2 * 3.14 * i) / 50;
+			angle = (2 * M_PI * i) / 50;
 			dx = r * cosf(angle);
 			dy = r * sinf(angle);
 			SDL_RenderDrawPoint(rnd, x + dx, y + dy);
@@ -71,5 +71,42 @@ void    draw_fill_rect(t_all *all, SDL_Rect area, t_color *color)
         }
         x++;
     }
+}
 
+Uint32		get_pixel_color(SDL_Surface *surface, const int x,\
+									const int y)
+{
+	Uint8	*p;
+	Uint32	rgb;
+
+	p = (Uint8 *)surface->pixels + y * surface->pitch + x
+			* surface->format->BytesPerPixel;
+	rgb = p[3] << 24 | p[2] << 16 | p[1] << 8 | p[0];
+	return (rgb);
+}
+
+void    draw_texture(SDL_Renderer *rnd, SDL_Rect area, SDL_Surface *txt)
+{
+    float x;
+    float y;
+    Uint32 col;
+	float kx, ky;
+	
+	kx = (float)txt->w / area.w;
+	ky = (float)txt->h / area.h;
+	
+    y = 0;
+    while(y < area.h)
+    {
+        x = 0;
+        while(x < area.w)
+        {
+            col = get_pixel_color(txt,kx*x, ky*y);
+            SDL_SetRenderDrawColor(rnd, col >> 16, col >> 8, col, 255);
+			if(col >> 24 != 0)
+            	SDL_RenderDrawPoint(rnd, area.x + x, area.y + y);
+			x++;
+        }
+		y++;
+    }
 }

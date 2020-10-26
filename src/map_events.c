@@ -76,7 +76,7 @@ void	map_click(t_xyz *mouse, t_sect *sector, t_all *all)
     else if(all->buttons[2].state == 1)
     {
 		all->player.where.z = 0;
-		set_player(all, x, y);
+		set_player(all, x, y + 1);
 	}
     else if(all->buttons[3].state == 1)
     {

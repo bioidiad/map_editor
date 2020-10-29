@@ -62,6 +62,7 @@ t_all    *init_all()
 	all->player.picked = 0;
 	all->min_coord = (t_xy){0, 0};
 	all->max_coord = (t_xy){0, 0};
+	all->iso = 0;
 	init_map(all);
 	return(all);
 }

@@ -13,6 +13,9 @@ t_xyz	isometric(t_all *all, t_sect *sect, t_xyz *start, t_xyz rot)
 	temp.z = -(start->x * sin(rot.y)) + start->z * cos(rot.y);
 	start->x = temp.x;
 	start->z = temp.z;
+	start->x -= all->area.w/2;
+	start->y -= all->area.h/4; 
+	start->z += all->mapsize.z/ 2;
 	// temp.x = start->x * cos(rot.z) - start->y * sin(rot.z);
 	// temp.y = start->x * sin(rot.z) + start->y * cos(rot.z);
 	// start->x = temp.x;
@@ -41,17 +44,17 @@ void	draw_map(SDL_Renderer *rnd, t_sect *sect, t_all *all)
 	while(i < all->num_sectors)
 	{
 		//if (i == all->num_sectors - 1)
-		//printf("sect # %d npoints = %d\nx, y = ", i, sect[i].npoints);
+		// printf("sect # %d npoints = %d\nx, y = ", i, sect[i].npoints);
 		j = 0;
 		temp = &sect[i];
 		// if (temp != all->swap)
 		// 	SDL_SetRenderDrawColor(rnd, 255, 255, 255, 255);
 		// else
-			SDL_SetRenderDrawColor(rnd, 255, 2, 2, 255);
+			
 		while (j < temp->npoints)
 		{
 			
-			//printf(" %d,%d  %d,%d\n", (int)temp->vertex[j].x, (int)temp->vertex[j].y, (int)temp->vertex[j +1].x, (int)temp->vertex[j +1].y);
+			// printf(" %d,%d  %d,%d\n", (int)temp->vertex[j].x, (int)temp->vertex[j].y, (int)temp->vertex[j +1].x, (int)temp->vertex[j +1].y);
 			s = (t_xyz){(temp->vertex[j].x * all->step) + all->area.w/2 - (all->mapsize.x/2 * all->step),
 				(temp->vertex[j].y * all->step) + all->area.h/2 - (all->mapsize.y/2 * all->step),
 					(temp->floor - all->mapsize.z/4) * all->step/2};
@@ -59,14 +62,20 @@ void	draw_map(SDL_Renderer *rnd, t_sect *sect, t_all *all)
 			f = (t_xyz){(temp->vertex[k].x * all->step) + all->area.w/2 - (all->mapsize.x/2 * all->step),
 				(temp->vertex[k].y * all->step) + all->area.h/2 - (all->mapsize.y/2 * all->step),
 					(temp->floor - all->mapsize.z/4) * all->step/2};
-			//isometric(all, temp, &s, all->rot);
-			//isometric(all, temp, &f, all->rot);
-			//if (i == all->num_sectors - 1)
-			// printf("%f %f %f %f\n",s.x, s.y, f.x, f.y);
+			if (all->iso)
+			{
+				isometric(all, temp, &s, (t_xyz){10, 1, 1});
+				isometric(all, temp, &f, (t_xyz){10, 1, 1});
+			}
+			if (temp->neighbors[j] == -1 && j < temp->npoints)
+				SDL_SetRenderDrawColor(rnd, 255, 2, 2, 255);
+			else
+				SDL_SetRenderDrawColor(rnd, 2, 2, 255, 255);
+			//printf("%f %f %f %f\n",s.x, s.y, f.x, f.y);
 			//SDL_RenderDrawLine(all->sdl->renderer, s.x, s.y, f.x, f.y);
 			draw_line(all, &s, &f);
 			//draw_wall(all, &temp, j, &s);
-			//draw_circle(rnd, (int)s.x, (int)s.y, 3);
+			draw_circle(rnd, (int)s.x, (int)s.y, 3);
 			j++;
 		}
 		//printf("points = %d\n", temp->npoints);
@@ -75,25 +84,7 @@ void	draw_map(SDL_Renderer *rnd, t_sect *sect, t_all *all)
 	//exit(0);
 }
 
-void	draw_grid(t_all *all, SDL_Rect *area, int step)
-{
-	t_xy	c;
 
-	c = (t_xy){(area->w / 2) % step, (area->h / 2) % step};
-	SDL_SetRenderDrawColor(all->sdl->renderer, 255, 255, 255, 70);
-	while (c.x <= area->w)
-	{
-		draw_line(all, &(t_xyz){c.x, 0, 0}, &(t_xyz){c.x, area->h});
-		c.x += step;
-	}
-	c.x = 0;
-	while (c.y <= area->h)
-	{
-		draw_line(all, &(t_xyz){c.x, c.y, 0}, &(t_xyz){area->w, c.y});
-		c.y += step;
-	}
-
-}
 
 void	draw_temp(t_all *all, SDL_Renderer *rnd, t_sect *temp)
 {
@@ -128,33 +119,21 @@ void	draw_temp(t_all *all, SDL_Renderer *rnd, t_sect *temp)
 	}
 }
 
-void	draw_player(t_all *all, SDL_Renderer *rnd, t_player *player)
-{
-	SDL_Rect loc;
-
-	if (all->player.picked == 0)
-		loc = (SDL_Rect){(player->where.x + (all->area.w/(2 * all->step) - (all->mapsize.x/2))) * all->step,
-		 (player->where.y + (all->area.w/(2 * all->step) - (all->mapsize.x/2))) * all->step,
-	 		 all->step, all->step};
-	else if (all->player.picked == 1)
-		loc = (SDL_Rect){all->point.x * all->step, all->point.y * all->step, all->step, all->step};
-	draw_texture(rnd, loc, player->picture);
-
-	// SDL_RenderCopy(rnd, player->picture, NULL, &loc);
-}
-
 void	draw_area(SDL_Renderer *rnd, t_all *all)
 {
+	t_xy	   c;
+
+	c = (t_xy){(all->area.w / 2) % all->step, (all->area.h / 2) % all->step};
 	draw_fill_rect(all, all->area, &(t_color){0, 0, 0, 255});
 	if (SDL_RenderSetViewport(rnd, &all->area) != 0)
 		exit(0);
 	draw_grid(all, &all->area, all->step);
 	draw_map(rnd, all->sectors, all);
 	if (all->point.x != 0 && all->point.y != 0)
-		draw_circle(all->sdl->renderer, all->point.x * all->step, all->point.y * all->step, 1);
+		draw_circle(all->sdl->renderer, all->point.x * all->step + c.x, all->point.y * all->step + c.y, 1);
 	if (all->temp->npoints != 0)
 		draw_temp(all, rnd, all->temp);
-	draw_player(all, rnd, &all->player);
+	draw_player(all, rnd, &all->player, &c);
 	
 	// SDL_RenderPresent(rnd);
 	

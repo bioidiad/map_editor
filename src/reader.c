@@ -12,7 +12,10 @@ int	load_map(char *name, t_all *all)
 	if (name)
 		fd = open(ft_strjoin(name, ".txt"), O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
 	else
+	{
 		fd = open("new_map.txt", O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
+		all->player.where = (t_xyz){0, 0, 0};
+	}
 	if (fd < 0)
 	{
 		perror(name);
@@ -66,7 +69,7 @@ int	load_map(char *name, t_all *all)
 			}
 
 			sect->npoints = m /= 2; //количество соседей и вершин этого сектора (всегда одинаково)
-			sect->neighbors = malloc((m) * sizeof(signed char));
+			sect->neighbors = malloc((m) * sizeof(int));
 			sect->vertex = malloc((m + 1) * sizeof(t_xy));
 			//цикл запишет правую половину num массива, то есть соседей
 			for (n = 0; n < m; ++n)

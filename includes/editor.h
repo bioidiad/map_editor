@@ -60,7 +60,7 @@ typedef struct      s_sect
 	float		floor;
 	float		ceil;
 	t_xy		*vertex;		//	Координаты всех вершин данного сектора, причем первая координаты дублируется в конце
-	signed char *neighbors;		//	Номера всех соседей данного сектора
+	int		 *neighbors;		//	Номера всех соседей данного сектора
 	unsigned	npoints; //	Количество соседей
 			
 }                   t_sect;
@@ -121,6 +121,7 @@ typedef struct      s_all
 	t_sect			*temp;			
     unsigned int    num_sectors;//количество секторов
 	int 			step;//шаг (масштаб)
+	int 			iso;
 	// float			angle;//угол поворота
 	// t_xyz			rot;//
 	t_xyint			point;//координаты ближайшей точки курсора
@@ -147,6 +148,8 @@ int					load_map(char *name, t_all *all); // загрузка карты
 int                 load_texture(t_all *all);// звгрузка текстур
 void                draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn);//отрисовка
 int					write_map(char *name, t_all *all);
+void				draw_player(t_all *all, SDL_Renderer *rnd, t_player *player, t_xy *c);
+void				draw_grid(t_all *all, SDL_Rect *area, int step);
 void    			draw_texture(SDL_Renderer *rnd, SDL_Rect area, SDL_Surface *txt);
 void    			draw_fill_rect(t_all *all, SDL_Rect area, t_color *color);
 void				draw_line(t_all *all, t_xyz *start, t_xyz *fin);

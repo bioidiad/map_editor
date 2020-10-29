@@ -149,10 +149,17 @@ int write_map(char *name, t_all *all)
             j++;
         }
         printf(" %d", get_order_num(all->sectors[i].vertex[0], vert));
+        printf("\t");
+        j = 0;
+        while (j < all->sectors[i].npoints)
+        {
+            printf(" %d", all->sectors[i].neighbors[j]);
+            j++;
+        }
         i++;
         printf("\n");
     }
-
+    printf("player  %d %d %d\n", (int)all->player.where.x, (int)all->player.where.y, (int)all->player.where.z);
     ft_memdel((void*)vert);
 
     

@@ -22,6 +22,8 @@ void	key_press(t_all *all)
 		all->step += 1;
 	else if (keystate[SDL_SCANCODE_LEFT])
 		all->step -= (all->step > 1) ? 1 : 0;
+	else if (keystate[SDL_SCANCODE_I])
+		all->iso = (all->iso == 0) ? 1 : 0;
 	// else if (keystate[SDL_SCANCODE_UP])
 	// 	all->rot.y += 1;
 	// else if (keystate[SDL_SCANCODE_DOWN])
@@ -85,8 +87,11 @@ t_xyz	coordinator(t_all *all, int x, int y, t_xyz rot)
 
 void	closest_point(t_all *all, t_xyint point, t_xyz mouse)
 {
-	all->point.x = round(((float)point.x - all->area.x) / all->step);
-	all->point.y = round(((float)point.y - all->area.y) / all->step);
+	t_xy	   c;
+
+	c = (t_xy){(all->area.w / 2) % all->step, (all->area.h / 2) % all->step};
+	all->point.x = round(((float)point.x - all->area.x - c.x) / all->step);
+	all->point.y = round(((float)point.y - all->area.y - c.y) / all->step);
 }
 
 void	on_mouse(t_all *all, SDL_MouseButtonEvent *event)

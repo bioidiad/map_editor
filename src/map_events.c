@@ -1,5 +1,53 @@
 #include "editor.h"
 
+int		is_neighbor(t_all	*all, t_xy coord, t_xy coord2)
+{
+	int i, j;
+	t_xy	*temp;
+
+	i = 0;
+	while(i < all->num_sectors - 1)
+	{
+		j = 0;
+		temp = all->sectors[i].vertex;
+		while (j < all->sectors[i].npoints)
+		{
+			if(coord.x == temp[j].x && coord.y == temp[j].y && 
+			((coord2.x == temp[j - 1].x && coord2.y == temp[j - 1].y) ||
+			(coord2.x == temp[j + 1].x && coord2.y == temp[j + 1].y)))
+				return (i);
+			j++;
+		}
+		i++;
+	}
+	return (-1);
+}
+
+void	get_neighbours(t_sect *sector, t_all 	*all, int n)
+{
+	int i = 0, j = 0;
+	int s = 0;
+	if (n == 1)
+	{
+		n = sector->npoints;
+		sector->neighbors = (int*)malloc(sizeof(int) * n);
+		while(--n >= 0)
+			sector->neighbors[n] = -1;
+	}
+	else
+	{
+		n = sector->npoints;
+		sector->neighbors = (int*)malloc(sizeof(int) * n);
+		while(i < sector->npoints - 1)
+		{
+			sector->neighbors[i] = is_neighbor(all, sector->vertex[i], sector->vertex[i + 1]);
+			i++;
+		}
+		sector->neighbors[i] = is_neighbor(all, sector->vertex[i], sector->vertex[0]);
+	}
+	
+}
+
 void    new_sector(t_all *all, int x, int y)
 {
     int i = 0;
@@ -24,6 +72,7 @@ void    new_sector(t_all *all, int x, int y)
 			i++;
 		}
 		all->sectors[all->num_sectors - 1].npoints--;
+		get_neighbours(&all->sectors[all->num_sectors -1], all, all->num_sectors);
 		// all->sectors[all->num_sectors - 1].vertex[0] = (t_xy){all->temp->vertex[0].x, all->temp->vertex[0].y};
 		printf("%p\n%p\n", all->temp->vertex, all->sectors[all->num_sectors-1].vertex);
 		ft_memdel((void*)&all->temp->vertex);
@@ -76,7 +125,7 @@ void	map_click(t_xyz *mouse, t_sect *sector, t_all *all)
     else if(all->buttons[2].state == 1)
     {
 		all->player.where.z = 0;
-		set_player(all, x, y + 1);
+		set_player(all, x, y);
 	}
     else if(all->buttons[3].state == 1)
     {

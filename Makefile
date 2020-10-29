@@ -23,6 +23,7 @@ SRC		= main.c \
 		  write.c \
 		  map_events.c\
 		  draw_utils.c\
+		  draw_utils2.c\
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.c=.o))
 CC		= gcc -g

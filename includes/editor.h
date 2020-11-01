@@ -3,6 +3,7 @@
 
 
 # include "../SDL/SDL.h"
+# include "../SDL2_ttf-2.0.15/SDL_ttf.h"
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -17,18 +18,15 @@
 # define PICT_HEIGHT 50
 # define PICT_WIDTH 90
 // # define OBJECTS (MAP_HEIGHT * MAP_WIDTH)
-# define BUTTONS 10
+# define BUTTONS 4
+# define FUNC_BUT 2
 # define OBJ_SIDE 57
-// # define LAYER 2
 # define EYE_HEIGHT 6
-
-typedef	struct		s_color
-{
-	int				r;
-	int				g;
-	int				b;
-	int				a;
-}					t_color;
+# define BLACK (SDL_Color){0, 0, 0, 255}
+# define WHITE (SDL_Color){255, 255, 255, 255}
+# define RED (SDL_Color){255, 0, 0, 255}
+# define BLUE (SDL_Color){0, 0, 255, 255}
+# define GREEN (SDL_Color){0, 255, 0, 255}
 
 typedef struct	    s_sdl
 {
@@ -68,7 +66,6 @@ typedef struct      s_sect
 typedef struct      s_object
 {
     t_sect			*sector;
-	// SDL_Texture		*texture;
 	SDL_Surface		*texture;
 
     SDL_Rect        dstrect;
@@ -76,8 +73,11 @@ typedef struct      s_object
 
 typedef struct      s_button
 {
-    t_object        object;
+    SDL_Surface		*texture;
+    SDL_Rect        dstrect;
+	SDL_Color		color;
     int             state;
+	char			*title;
 }                   t_button;
 
 typedef struct      s_edit
@@ -91,7 +91,6 @@ typedef	struct	s_player
 {
 	t_xyz		where;			//	Current position
 	t_xyz		velocity;
-	// SDL_Texture	*picture;
 	SDL_Surface	*picture;
 
 	int			picked;		//	Current motion vector
@@ -122,19 +121,21 @@ typedef struct      s_all
     unsigned int    num_sectors;//количество секторов
 	int 			step;//шаг (масштаб)
 	int 			iso;
+	SDL_Color		color;
+	TTF_Font		*font;
 	// float			angle;//угол поворота
 	// t_xyz			rot;//
+	t_xy			draw_floors;
+	t_xy			set_floors;
 	t_xyint			point;//координаты ближайшей точки курсора
     t_xyz			mouse;//координаты мыши на area
 	t_xyz			mapsize;//размер карты в исходной СИ
 	t_xy			min_coord;
 	t_xy			max_coord;
     SDL_Rect        area;//область редактирования
-    // SDL_Texture     *texture;//текстура-подложка 
     SDL_Surface     *texture;//текстура-подложка 
 
     t_object        map[690][876];//массив пикселей области  area
-	// t_xyz			map_whl;//
     t_button        buttons[BUTTONS];//кнопки
     t_edit			edit;//
     t_sdl           *sdl;//
@@ -146,13 +147,18 @@ void                on_event(t_all *all, SDL_Event *event); //обработка
 void				map_click(t_xyz *mouse, t_sect *sector, t_all *all);
 int					load_map(char *name, t_all *all); // загрузка карты
 int                 load_texture(t_all *all);// звгрузка текстур
+int					load_buttons(t_all *all, t_button *btn);
 void                draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn);//отрисовка
 int					write_map(char *name, t_all *all);
 void				draw_player(t_all *all, SDL_Renderer *rnd, t_player *player, t_xy *c);
 void				draw_grid(t_all *all, SDL_Rect *area, int step);
 void    			draw_texture(SDL_Renderer *rnd, SDL_Rect area, SDL_Surface *txt);
-void    			draw_fill_rect(t_all *all, SDL_Rect area, t_color *color);
-void				draw_line(t_all *all, t_xyz *start, t_xyz *fin);
+void    			draw_fill_rect(t_all *all, SDL_Rect area, SDL_Color *color);
+void				draw_line(t_all *all, t_xyz *start, t_xyz *fin, SDL_Color color);
 void				draw_circle(SDL_Renderer *rnd, int x, int y, int r);
+void				draw_slider(t_all *all, SDL_Rect *area, int level, char *title);
+void				get_neighbours(t_sect *sector, t_all 	*all, int n);
+SDL_Surface			*get_text_surface(t_all *all, char *name, SDL_Rect target, SDL_Color color);
+
 
 # endif

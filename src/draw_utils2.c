@@ -1,5 +1,25 @@
 #include "editor.h"
 
+
+void	draw_slider(t_all *all, SDL_Rect *area, int level, char *title)
+{
+	int x, y;
+	int len;
+	SDL_Color color;
+	y = area->h;
+	while(y >= 0)
+	{
+		color = (y == 0 || y == area->h) ? BLACK : WHITE;
+		draw_line(all, &(t_xyz){area->x , area->y + y, 0}, 
+			&(t_xyz){area->x + area->w, area->y + y, 0}, color);
+		y--;
+	} 
+	draw_circle(all->sdl->renderer, area->x + (area->w / 100) * level, 
+		area->y + area->h / 2, area->h / 2);
+	len = ft_strlen(title) * 5;
+	//draw_texture();
+}
+
 void	draw_player(t_all *all, SDL_Renderer *rnd, t_player *player, t_xy *c)
 {
 	SDL_Rect loc;
@@ -21,16 +41,16 @@ void	draw_grid(t_all *all, SDL_Rect *area, int step)
 	t_xy	c;
 
 	c = (t_xy){(area->w / 2) % step, (area->h / 2) % step};
-	SDL_SetRenderDrawColor(all->sdl->renderer, 255, 255, 255, 70);
+	all->color = (SDL_Color){255, 255, 255, 70};
 	while (c.x <= area->w)
 	{
-		draw_line(all, &(t_xyz){c.x, 0, 0}, &(t_xyz){c.x, area->h});
+		draw_line(all, &(t_xyz){c.x, 0, 0}, &(t_xyz){c.x, area->h}, all->color);
 		c.x += step;
 	}
 	c.x = 0;
 	while (c.y <= area->h)
 	{
-		draw_line(all, &(t_xyz){c.x, c.y, 0}, &(t_xyz){area->w, c.y});
+		draw_line(all, &(t_xyz){c.x, c.y, 0}, &(t_xyz){area->w, c.y}, all->color);
 		c.y += step;
 	}
 }

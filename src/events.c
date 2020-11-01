@@ -39,9 +39,9 @@ void	button_click(t_all *all, t_button *buttons, SDL_MouseButtonEvent *event)
 	i = 0;
 	while(i < BUTTONS && all->mouse.z == 1)
 	{
-		dx = event->x - buttons[i].object.dstrect.x;
-		dy = event->y - buttons[i].object.dstrect.y;
-		if(dx > 0 && dy > 0 && dx < PICT_WIDTH && dy < PICT_HEIGHT)
+		dx = event->x - buttons[i].dstrect.x;
+		dy = event->y - buttons[i].dstrect.y;
+		if(dx > 0 && dy > 0 && dx < buttons[i].dstrect.w && dy < buttons[i].dstrect.h)
 		{
 			buttons[i].state = buttons[i].state == 1 ? 0 : 1;
 			all->edit.function = i;
@@ -51,7 +51,7 @@ void	button_click(t_all *all, t_button *buttons, SDL_MouseButtonEvent *event)
 			buttons[i].state = 0;		
 		i++;
 	}
-	all->player.picked = buttons[2].state == 1 ? 1 : 0;
+	all->player.picked = buttons[1].state == 1 ? 1 : 0;
 }
 
 t_xyz	coordinator(t_all *all, int x, int y, t_xyz rot)

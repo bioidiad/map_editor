@@ -1,12 +1,14 @@
 #include "editor.h"
 
-void	draw_line(t_all *all, t_xyz *start, t_xyz *fin)
+void	draw_line(t_all *all, t_xyz *start, t_xyz *fin, SDL_Color color)
 {
 	float		dx;
 	float		dy;
 	int	l;
 	int i;
 	float x, y;
+
+	SDL_SetRenderDrawColor(all->sdl->renderer, color.r, color.g, color.b, color.a);
 
 	l = (int)fmax(abs((int)start->x - (int)fin->x), abs((int)start->y - (int)fin->y));
 	dx = (fin->x - start->x) / l;
@@ -54,7 +56,7 @@ void	draw_circle(SDL_Renderer *rnd, int x, int y, int r)
 	}
 }
 
-void    draw_fill_rect(t_all *all, SDL_Rect area, t_color *color)
+void    draw_fill_rect(t_all *all, SDL_Rect area, SDL_Color *color)
 {
     int x;
     int y;

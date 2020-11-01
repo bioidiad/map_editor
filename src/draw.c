@@ -30,12 +30,12 @@ void	draw_wall(t_all *all, t_sect *sect, int j, t_xyz *vertex)
 				sect->vertex[j].y * all->step + (all->step * 6), sect->ceil * all->step/2};
 	//isometric(all, sect, &f, all->rot);
 	//if (sect->floor == 0)
-		draw_line(all, vertex, &f);
+		draw_line(all, vertex, &f, all->color);
 }
 
 void	draw_map(SDL_Renderer *rnd, t_sect *sect, t_all *all)
 {
-	int		i, j, k;
+	int		i, j;
 	t_xyz	s;
 	t_xyz	f;
 	t_sect *temp;
@@ -43,45 +43,29 @@ void	draw_map(SDL_Renderer *rnd, t_sect *sect, t_all *all)
 	i = 0;
 	while(i < all->num_sectors)
 	{
-		//if (i == all->num_sectors - 1)
-		// printf("sect # %d npoints = %d\nx, y = ", i, sect[i].npoints);
 		j = 0;
 		temp = &sect[i];
-		// if (temp != all->swap)
-		// 	SDL_SetRenderDrawColor(rnd, 255, 255, 255, 255);
-		// else
-			
 		while (j < temp->npoints)
 		{
-			
-			// printf(" %d,%d  %d,%d\n", (int)temp->vertex[j].x, (int)temp->vertex[j].y, (int)temp->vertex[j +1].x, (int)temp->vertex[j +1].y);
 			s = (t_xyz){(temp->vertex[j].x * all->step) + all->area.w/2 - (all->mapsize.x/2 * all->step),
 				(temp->vertex[j].y * all->step) + all->area.h/2 - (all->mapsize.y/2 * all->step),
 					(temp->floor - all->mapsize.z/4) * all->step/2};
-			k = j + 1; 
-			f = (t_xyz){(temp->vertex[k].x * all->step) + all->area.w/2 - (all->mapsize.x/2 * all->step),
-				(temp->vertex[k].y * all->step) + all->area.h/2 - (all->mapsize.y/2 * all->step),
+			f = (t_xyz){(temp->vertex[j + 1].x * all->step) + all->area.w/2 - (all->mapsize.x/2 * all->step),
+				(temp->vertex[j + 1].y * all->step) + all->area.h/2 - (all->mapsize.y/2 * all->step),
 					(temp->floor - all->mapsize.z/4) * all->step/2};
 			if (all->iso)
 			{
 				isometric(all, temp, &s, (t_xyz){10, 1, 1});
 				isometric(all, temp, &f, (t_xyz){10, 1, 1});
 			}
-			if (temp->neighbors[j] == -1 && j < temp->npoints)
-				SDL_SetRenderDrawColor(rnd, 255, 2, 2, 255);
-			else
-				SDL_SetRenderDrawColor(rnd, 2, 2, 255, 255);
-			//printf("%f %f %f %f\n",s.x, s.y, f.x, f.y);
-			//SDL_RenderDrawLine(all->sdl->renderer, s.x, s.y, f.x, f.y);
-			draw_line(all, &s, &f);
-			//draw_wall(all, &temp, j, &s);
+			all->color = (temp->neighbors[j] == -1 && j < temp->npoints) ? RED : BLUE;
+			draw_line(all, &s, &f, all->color);
 			draw_circle(rnd, (int)s.x, (int)s.y, 3);
 			j++;
 		}
-		//printf("points = %d\n", temp->npoints);
+		SDL_RenderPresent(all->sdl->renderer);
 		i++;
 	}
-	//exit(0);
 }
 
 
@@ -114,7 +98,7 @@ void	draw_temp(t_all *all, SDL_Renderer *rnd, t_sect *temp)
 				(temp->vertex[j + 1].y * all->step) + all->area.h/2 - (all->mapsize.y/2 * all->step),
 					(temp->floor - all->mapsize.z/4) * all->step/2};
 		}
-		draw_line(all, &s, &f);
+		draw_line(all, &s, &f, all->color);
 		j++;
 	}
 }
@@ -124,7 +108,7 @@ void	draw_area(SDL_Renderer *rnd, t_all *all)
 	t_xy	   c;
 
 	c = (t_xy){(all->area.w / 2) % all->step, (all->area.h / 2) % all->step};
-	draw_fill_rect(all, all->area, &(t_color){0, 0, 0, 255});
+	draw_fill_rect(all, all->area, &(SDL_Color){0, 0, 0, 255});
 	if (SDL_RenderSetViewport(rnd, &all->area) != 0)
 		exit(0);
 	draw_grid(all, &all->area, all->step);
@@ -134,9 +118,6 @@ void	draw_area(SDL_Renderer *rnd, t_all *all)
 	if (all->temp->npoints != 0)
 		draw_temp(all, rnd, all->temp);
 	draw_player(all, rnd, &all->player, &c);
-	
-	// SDL_RenderPresent(rnd);
-	
 }
 
 void	draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn)
@@ -148,21 +129,16 @@ void	draw_all(t_all *all, SDL_Renderer *rnd, t_button *btn)
 	if (SDL_RenderSetViewport(rnd, NULL) != 0)
 		exit(0);
 	// draw_texture(rnd, (SDL_Rect){0,0, WIDTH, HEIGHT}, all->texture);
-    // SDL_RenderCopy(rnd, all->texture, NULL, NULL);
-	while (i++ < BUTTONS)
+	while (i < BUTTONS)
 	{
-        SDL_SetRenderDrawColor(rnd, 250, 250, 250, 70);
-		if(all->buttons[i - 1].state == 1)
-            draw_fill_rect(all, btn[i - 1].object.dstrect, &(t_color){250, 250, 250, 70});
-			//SDL_RenderFillRect(rnd, &btn[i - 1].object.dstrect);
-		draw_texture(rnd, btn[i - 1].object.dstrect, btn[i - 1].object.texture);
-        // SDL_RenderCopy(rnd, btn[i - 1].object.texture, NULL, &btn[i - 1].object.dstrect);
+		
+		btn[i].color = (btn[i].state == 0) ? WHITE : RED;
+		SDL_FreeSurface(btn[i].texture);
+		btn[i].texture = get_text_surface(all, btn[i].title, btn[i].dstrect, btn[i].color);
+		draw_texture(rnd, btn[i].dstrect, btn[i].texture);
+		i++;
     } 
-    // if(all->layer == 1)
-		draw_area(rnd, all);
-   
-	// state = SDL_GetMouseState(&all->mouse.x, &all->mouse.y);
-	//printf("1=%d\n2=%d\n3=%d\n4=%d\n", all->line.x1, all->line.y1, all->line.x2, all->line.y2);
-	//draw_map(all->object[all->layer], rnd);
+	draw_slider(all, &(SDL_Rect){50, 500, 100, 20}, 50, "floor heigt");
+	draw_area(rnd, all);
     SDL_RenderPresent(all->sdl->renderer);
 }

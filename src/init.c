@@ -1,6 +1,24 @@
 #include "editor.h"
 
-static void			init_sdl(t_sdl *sdl)
+void	load_fonts(t_sdl *sdl, t_all *all)
+{
+		if(TTF_Init()==-1) 
+	{
+    	SDL_DestroyWindow(sdl->window);
+		SDL_Quit();
+		error_and_close(__FILE__, __FUNCTION__);
+	}
+
+	all->font = TTF_OpenFont("fonts/CRA75.ttf", 36);
+	if(!all->font) 
+	{
+    	SDL_DestroyWindow(sdl->window);
+		SDL_Quit();
+		error_and_close(__FILE__, __FUNCTION__);
+	}
+}
+
+static void			init_sdl(t_sdl *sdl, t_all *all)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 		error_and_close(__FILE__, __FUNCTION__);
@@ -20,6 +38,8 @@ static void			init_sdl(t_sdl *sdl)
 		error_and_close(__FILE__, __FUNCTION__);
 	}
 	SDL_SetRenderDrawBlendMode(sdl->renderer, SDL_BLENDMODE_BLEND);
+
+	load_fonts(sdl, all);
 }
 
 void	init_map(t_all *all)
@@ -49,7 +69,7 @@ t_all    *init_all()
 		error_and_close(__FILE__, __FUNCTION__);
 	if (!(all->sdl = (t_sdl*)malloc(sizeof(t_sdl))))
 		error_and_close(__FILE__, __FUNCTION__);
-    init_sdl(all->sdl);
+    init_sdl(all->sdl, all);
 	all->mouse.z = 0; // переменная нажатия ЛКМ
 	all->area = (SDL_Rect){319, 4, 876, 691}; // Область карты
 	all->edit = (t_edit){0, (t_xyz){0,0,0}};
@@ -63,6 +83,7 @@ t_all    *init_all()
 	all->min_coord = (t_xy){0, 0};
 	all->max_coord = (t_xy){0, 0};
 	all->iso = 0;
+	all->draw_floors = (t_xy){0, 20};
 	init_map(all);
 	return(all);
 }

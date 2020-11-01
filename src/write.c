@@ -81,11 +81,13 @@ void    normalize(t_sect *sectors, int num, t_all *all)
         }
         i++;
     }
+    all->player.where.x += (all->min_coord.x < 0) ? -all->min_coord.x : all->min_coord.x;
+    all->player.where.y += (all->min_coord.y < 0) ? -all->min_coord.y : all->min_coord.y;
     all->max_coord.x += (all->min_coord.x < 0) ? -all->min_coord.x : 0;
     all->max_coord.y += (all->min_coord.y < 0) ? -all->min_coord.y : 0;
     all->min_coord.x += (all->min_coord.x < 0) ? -all->min_coord.x : 0;
     all->min_coord.y += (all->min_coord.y < 0) ? -all->min_coord.y : 0;
-    
+
 }
 
 int get_order_num(t_xy coord, int **vert)

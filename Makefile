@@ -3,7 +3,7 @@ NAME = DOOM
 FLAGS = #-Wall -Werror -Wextra
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	CFLAGS = -I SDL2/SDL.h -lSDL2
+	CFLAGS = -I SDL2/SDL.h -lSDL2 -lSDL2_ttf
 endif
 ifeq ($(UNAME_S),Darwin)
 	CFLAGS = -I SDL/SDL.h -L lib -l SDL2-2.0.0
@@ -24,6 +24,7 @@ SRC		= main.c \
 		  map_events.c\
 		  draw_utils.c\
 		  draw_utils2.c\
+		  neighbors.c\
 
 OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.c=.o))
 CC		= gcc -g
